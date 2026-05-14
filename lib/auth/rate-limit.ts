@@ -11,7 +11,7 @@ async function consumeMemoryRateLimit(
   key: string,
   limit: number,
   windowMs: number
-): { ok: boolean; retryAfterMs: number } {
+): Promise<{ ok: boolean; retryAfterMs: number }> {
   const now = Date.now();
   const current = buckets.get(key);
 
