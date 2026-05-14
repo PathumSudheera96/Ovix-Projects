@@ -1,0 +1,1271 @@
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[browser] Uncaught TypeError: Failed to fetch
+    at fetchServerAction (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:11132:23)
+    at form (<anonymous>)
+    at DashboardShell (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/_10xky28._.js:1527:243)
+    at Home (about://React/Server/D:%5CDeveloped%20Apps%5CInvoice%20Generator%5Cinvoice-generator%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__10u7cfd._.js?22:112:263)
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__09tdk-c._.js:594:239)
+    at module evaluation (.next-internal\server\app\page\actions.js (server actions loader):1:1)
+    at module evaluation (D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__09tdk-c._.js:1121:479)
+> 1 | export {logoutAction as '00e7eaa4feedaa68160597c2552e449b8c5efcd7b4'} from 'ACTIONS_MODULE0'
+    | ^
+  2 | export {deleteInvoiceAction as '407581705c6d769c9b374f3e11795566e9d535f0d1'} from 'ACTIONS_...
+  3 | export {createInvoiceAction as '606c47805a8088497afa6a85901da02a25453feed8'} from 'ACTIONS_...
+  4 | {
+  digest: '744081101@E352'
+}
+[browser] Uncaught Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/D:%5CDeveloped%20Apps%5CInvoice%20Generator%5Cinvoice-generator%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09tdk-c._.js?23:594:239)
+    at module evaluation (.next-internal\server\app\page\actions.js (server actions loader):1:1)
+    at module evaluation (about://React/Server/D:%5CDeveloped%20Apps%5CInvoice%20Generator%5Cinvoice-generator%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09tdk-c._.js?25:1121:479)
+    at resolveErrorDev (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:1919:105)
+    at processFullStringRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2434:29)
+    at processFullBinaryRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2393:9)
+    at processBinaryChunk (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2502:221)
+    at progress (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2689:13)
+    at form (<anonymous>)
+    at DashboardShell (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/_10xky28._.js:1527:243)
+    at Home (app\page.tsx:14:10)
+> 1 | export {logoutAction as '00e7eaa4feedaa68160597c2552e449b8c5efcd7b4'} from 'ACTIONS_MODULE0'
+    | ^
+  2 | export {deleteInvoiceAction as '407581705c6d769c9b374f3e11795566e9d535f0d1'} from 'ACTIONS_...
+  3 | export {createInvoiceAction as '606c47805a8088497afa6a85901da02a25453feed8'} from 'ACTIONS_...
+  4 |
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__09tdk-c._.js:594:239)
+    at module evaluation (.next-internal\server\app\page\actions.js (server actions loader):1:1)
+    at module evaluation (D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__09tdk-c._.js:1121:479)
+> 1 | export {logoutAction as '00e7eaa4feedaa68160597c2552e449b8c5efcd7b4'} from 'ACTIONS_MODULE0'
+    | ^
+  2 | export {deleteInvoiceAction as '407581705c6d769c9b374f3e11795566e9d535f0d1'} from 'ACTIONS_...
+  3 | export {createInvoiceAction as '606c47805a8088497afa6a85901da02a25453feed8'} from 'ACTIONS_...
+  4 | {
+  digest: '744081101@E352'
+}
+[browser] Uncaught Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/D:%5CDeveloped%20Apps%5CInvoice%20Generator%5Cinvoice-generator%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09tdk-c._.js?23:594:239)
+    at module evaluation (.next-internal\server\app\page\actions.js (server actions loader):1:1)
+    at module evaluation (about://React/Server/D:%5CDeveloped%20Apps%5CInvoice%20Generator%5Cinvoice-generator%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09tdk-c._.js?25:1121:479)
+    at resolveErrorDev (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:1919:105)
+    at processFullStringRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2434:29)
+    at processFullBinaryRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2393:9)
+    at processBinaryChunk (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2502:221)
+    at progress (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2689:13)
+    at DashboardShell (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/_10xky28._.js:1682:235)
+    at Home (app\page.tsx:14:10)
+> 1 | export {logoutAction as '00e7eaa4feedaa68160597c2552e449b8c5efcd7b4'} from 'ACTIONS_MODULE0'
+    | ^
+  2 | export {deleteInvoiceAction as '407581705c6d769c9b374f3e11795566e9d535f0d1'} from 'ACTIONS_...
+  3 | export {createInvoiceAction as '606c47805a8088497afa6a85901da02a25453feed8'} from 'ACTIONS_...
+  4 |
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+      <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+        <RedirectBoundary>
+          <RedirectErrorBoundary router={{...}}>
+            <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+              <SegmentViewNode type="page" pagePath="page.tsx">
+                <SegmentTrieNode>
+                <Home>
+                  <DashboardShell data={{...}} csrfToken="926e26ec04...">
+                    <div className="min-h-scre...">
+                      <aside>
+                      <div className="lg:pl-72">
+                        <header className="sticky top...">
+                          <div className="flex h-16 ...">
+                            <Button>
+                            <div>
+                            <div className="ml-auto fl...">
+                              <Button type="button" variant="outline" size="icon" aria-label="Notifications">
+                                <button
+                                  data-slot="button"
+                                  className={"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded..."}
+                                  type="button"
+                                  aria-label="Notifications"
+-                                 fdprocessedid="j16txr"
+                                >
+                              <Button type="button" className="hidden sm:...">
+                                <button
+                                  data-slot="button"
+                                  className={"items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm ..."}
+                                  type="button"
+-                                 fdprocessedid="i80j8"
+                                >
+                              <Button>
+                              <form action={function logoutAction}>
+                                <Button type="submit" variant="outline">
+                                  <button
+                                    data-slot="button"
+                                    className={"inline-flex items-center justify-center gap-2 whitespace-nowrap round..."}
+                                    type="submit"
+-                                   fdprocessedid="8dvg5g"
+                                  >
++                                   Logout
+                        <main className="px-4 py-6 ...">
+                          <div className="mx-auto fl...">
+                            <section className="flex flex-...">
+                              <div>
+                              <div className="grid grid-...">
+                                <Button type="button" variant="outline">
+                                  <button
+                                    data-slot="button"
+                                    className={"inline-flex items-center justify-center gap-2 whitespace-nowrap round..."}
+                                    type="button"
+-                                   fdprocessedid="333cj5"
+                                  >
++                                   Export
+                                <Button type="button">
+                                  <button
+                                    data-slot="button"
+                                    className={"inline-flex items-center justify-center gap-2 whitespace-nowrap round..."}
+                                    type="button"
+-                                   fdprocessedid="6kq1d"
+                                  >
+                            <section>
+                            <InvoiceForm csrfToken="926e26ec04...">
+                              <form action={function bound dispatchActionState} className="rounded-lg...">
+                                <input>
+                                ...
+                                  <div className="grid grid-...">
+                                    <div className="space-y-2">
+                                      <label>
+                                      <Input id="invoice-nu..." name="invoiceNo" defaultValue="INV-1049" required={true}>
+                                        <input
+                                          type={undefined}
+                                          data-slot="input"
+                                          className="h-10 w-full min-w-0 rounded-md border border-input bg-background ..."
+                                          id="invoice-number"
+                                          name="invoiceNo"
+                                          defaultValue="INV-1049"
+                                          required={true}
+-                                         fdprocessedid="l0xo1s"
+                                        >
+                                    ...
+                                <div className="grid gap-6...">
+                                  <div className="space-y-6">
+                                    <div className="grid gap-4...">
+                                      <div className="space-y-2">
+                                        <label>
+                                        <Input id="customer-name" name="customerName" placeholder="Customer name" ...>
+                                          <input
+                                            type={undefined}
+                                            data-slot="input"
+                                            className="h-10 w-full min-w-0 rounded-md border border-input bg-backgroun..."
+                                            id="customer-name"
+                                            name="customerName"
+                                            placeholder="Customer name"
+                                            required={true}
+-                                           fdprocessedid="l9xai6"
+                                          >
+                                      <div className="space-y-2">
+                                        <label>
+                                        <Input id="customer-e..." name="customerEmail" type="email" ...>
+                                          <input
+                                            type="email"
+                                            data-slot="input"
+                                            className="h-10 w-full min-w-0 rounded-md border border-input bg-backgroun..."
+                                            id="customer-email"
+                                            name="customerEmail"
+                                            placeholder="billing@example.com"
+-                                           fdprocessedid="b79ub"
+                                          >
+                                      <div className="space-y-2">
+                                        <label>
+                                        <Input id="customer-p..." name="customerPhone" placeholder="+1 555 0199">
+                                          <input
+                                            type={undefined}
+                                            data-slot="input"
+                                            className="h-10 w-full min-w-0 rounded-md border border-input bg-backgroun..."
+                                            id="customer-phone"
+                                            name="customerPhone"
+                                            placeholder="+1 555 0199"
+-                                           fdprocessedid="4nzdsp"
+                                          >
+                                      <div className="space-y-2">
+                                        <label>
+                                        <select
+                                          id="invoice-status"
+                                          name="status"
+                                          className="h-10 w-full rounded-md border border-input bg-background px-3 py-..."
+                                          defaultValue="draft"
+-                                         fdprocessedid="t8yz"
+                                        >
+                                    <div className="space-y-3">
+                                      <div className="flex items...">
+                                        <h3>
+                                        <Button type="button" variant="outline" size="sm" onClick={function addItem}>
+                                          <button
+                                            data-slot="button"
+                                            className={"inline-flex items-center justify-center whitespace-nowrap tex..."}
+                                            type="button"
+                                            onClick={function addItem}
+-                                           fdprocessedid="1bpj3o"
+                                          >
+                                      <div>
+                                      <div className="space-y-3">
+                                        <div className="grid gap-3...">
+                                          <div className="space-y-2 ...">
+                                            <label>
+                                            <Input id="item-descr..." name="items.0.de..." value="Brand iden..." ...>
+                                              <input
+                                                type={undefined}
+                                                data-slot="input"
+                                                className="h-10 w-full min-w-0 rounded-md border border-input bg-backg..."
+                                                id="item-description-brand-identity-design"
+                                                name="items.0.description"
+                                                value="Brand identity design"
+                                                placeholder="Item description"
+                                                required={true}
+                                                onChange={function onChange}
+-                                               fdprocessedid="bwhmtp"
+                                              >
+                                          <div className="space-y-2 ...">
+                                            <label>
+                                            <Input id="item-quant..." inputMode="decimal" min="0" name="items.0.qu..." ...>
+                                              <input
+                                                type="number"
+                                                data-slot="input"
+                                                className="h-10 w-full min-w-0 rounded-md border border-input bg-backg..."
+                                                id="item-quantity-brand-identity-design"
+                                                inputMode="decimal"
+                                                min="0"
+                                                name="items.0.quantity"
+                                                step="1"
+                                                value={1}
+                                                onChange={function onChange}
+-                                               fdprocessedid="lmvjzh"
+                                              >
+                                          <div className="space-y-2 ...">
+                                            <label>
+                                            <Input id="item-rate-..." inputMode="decimal" min="0" name="items.0.rate" ...>
+                                              <input
+                                                type="number"
+                                                data-slot="input"
+                                                className="h-10 w-full min-w-0 rounded-md border border-input bg-backg..."
+                                                id="item-rate-brand-identity-design"
+                                                inputMode="decimal"
+                                                min="0"
+                                                name="items.0.rate"
+                                                step="0.01"
+                                                value={1200}
+                                                onChange={function onChange}
+-                                               fdprocessedid="mugoql"
+                                              >
+                                          <div>
+                                          <Button type="button" variant="ghost" size="icon" aria-label="Remove item 1" ...>
+                                            <button
+                                              data-slot="button"
+                                              className={"inline-flex items-center justify-center gap-2 whitespace-no..."}
+                                              type="button"
+                                              aria-label="Remove item 1"
+                                              disabled={false}
+                                              onClick={function onClick}
+-                                             fdprocessedid="2v662"
+                                            >
+                                        <div className="grid gap-3...">
+                                          <div className="space-y-2 ...">
+                                            <label>
+                                            <Input id="item-descr..." name="items.1.de..." value="Monthly re..." ...>
+                                              <input
+                                                type={undefined}
+                                                data-slot="input"
+                                                className="h-10 w-full min-w-0 rounded-md border border-input bg-backg..."
+                                                id="item-description-monthly-retainer"
+                                                name="items.1.description"
+                                                value="Monthly retainer"
+                                                placeholder="Item description"
+                                                required={true}
+                                                onChange={function onChange}
+-                                               fdprocessedid="97fivd"
+                                              >
+                                          <div className="space-y-2 ...">
+                                            <label>
+                                            <Input id="item-quant..." inputMode="decimal" min="0" name="items.1.qu..." ...>
+                                              <input
+                                                type="number"
+                                                data-slot="input"
+                                                className="h-10 w-full min-w-0 rounded-md border border-input bg-backg..."
+                                                id="item-quantity-monthly-retainer"
+                                                inputMode="decimal"
+                                                min="0"
+                                                name="items.1.quantity"
+                                                step="1"
+                                                value={2}
+                                                onChange={function onChange}
+-                                               fdprocessedid="k7up54"
+                                              >
+                                          <div className="space-y-2 ...">
+                                            <label>
+                                            <Input id="item-rate-..." inputMode="decimal" min="0" name="items.1.rate" ...>
+                                              <input
+                                                type="number"
+                                                data-slot="input"
+                                                className="h-10 w-full min-w-0 rounded-md border border-input bg-backg..."
+                                                id="item-rate-monthly-retainer"
+                                                inputMode="decimal"
+                                                min="0"
+                                                name="items.1.rate"
+                                                step="0.01"
+                                                value={450}
+                                                onChange={function onChange}
+-                                               fdprocessedid="nyq85g"
+                                              >
+                                          <div>
+                                          <Button type="button" variant="ghost" size="icon" aria-label="Remove item 2" ...>
+                                            <button
+                                              data-slot="button"
+                                              className={"inline-flex items-center justify-center gap-2 whitespace-no..."}
+                                              type="button"
+                                              aria-label="Remove item 2"
+                                              disabled={false}
+                                              onClick={function onClick}
+-                                             fdprocessedid="6otemt"
+                                            >
+                                    ...
+                                  <aside className="h-fit roun...">
+                                    <h3>
+                                    <div className="mt-4 space...">
+                                      <div>
+                                      <div className="flex items...">
+                                        <label>
+                                        <div className="flex w-28 ...">
+                                          <Input id="tax-rate" className="h-8 border..." inputMode="decimal" min="0" ...>
+                                            <input
+                                              type="number"
+                                              data-slot="input"
+                                              className="w-full min-w-0 rounded-md border-input bg-background px-3 py-..."
+                                              id="tax-rate"
+                                              inputMode="decimal"
+                                              min="0"
+                                              name="taxRate"
+                                              step="0.01"
+                                              value={8}
+                                              onChange={function onChange}
+-                                             fdprocessedid="7pt865"
+                                            >
+                                          ...
+                                      ...
+                                    <div className="mt-5 grid ...">
+                                      <Button type="submit" disabled={false}>
+                                        <button
+                                          data-slot="button"
+                                          className={"inline-flex items-center justify-center gap-2 whitespace-nowrap..."}
+                                          type="submit"
+                                          disabled={false}
+-                                         fdprocessedid="gfjpdh"
+                                        >
++                                         Save invoice
+                                      <Button type="button" variant="outline">
+                                        <button
+                                          data-slot="button"
+                                          className={"inline-flex items-center justify-center gap-2 whitespace-nowrap..."}
+                                          type="button"
+-                                         fdprocessedid="m2h1yb"
+                                        >
++                                         Preview invoice
+                                    ...
+                            <section className="grid gap-4...">
+                              <div className="rounded-lg...">
+                                <div className="flex items...">
+                                  <div>
+                                  <Button type="button" variant="outline" className="hidden sm:...">
+                                    <button
+                                      data-slot="button"
+                                      className={"items-center justify-center gap-2 whitespace-nowrap rounded-md text..."}
+                                      type="button"
+-                                     fdprocessedid="qsk71e"
+                                    >
++                                     View all
+                                ...
+                              ...
+              ...
+            ...
+ 
+    at <unknown> (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3439:25)
+    at runWithFiberInDEV (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at emitPendingHydrationWarnings (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3438:13)
+    at completeWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6885:102)
+    at runWithFiberInDEV (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:131)
+    at completeUnitOfWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9622:23)
+    at performUnitOfWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9557:28)
+    at workLoopConcurrentByScheduler (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9551:58)
+    at renderRootConcurrent (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9534:71)
+    at performWorkOnRoot (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64) (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3439:25)
+⨯ Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__09tdk-c._.js:594:239)
+    at module evaluation (.next-internal\server\app\page\actions.js (server actions loader):1:1)
+    at module evaluation (D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__09tdk-c._.js:1121:479)
+> 1 | export {logoutAction as '00e7eaa4feedaa68160597c2552e449b8c5efcd7b4'} from 'ACTIONS_MODULE0'
+    | ^
+  2 | export {deleteInvoiceAction as '407581705c6d769c9b374f3e11795566e9d535f0d1'} from 'ACTIONS_...
+  3 | export {createInvoiceAction as '606c47805a8088497afa6a85901da02a25453feed8'} from 'ACTIONS_...
+  4 | {
+  digest: '744081101@E352'
+}
+[browser] Uncaught Error: A "use server" file can only export async functions, found object.
+Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+    at module evaluation (about://React/Server/D:%5CDeveloped%20Apps%5CInvoice%20Generator%5Cinvoice-generator%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09tdk-c._.js?23:594:239)
+    at module evaluation (.next-internal\server\app\page\actions.js (server actions loader):1:1)
+    at module evaluation (about://React/Server/D:%5CDeveloped%20Apps%5CInvoice%20Generator%5Cinvoice-generator%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09tdk-c._.js?25:1121:479)
+    at resolveErrorDev (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:1919:105)
+    at processFullStringRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2434:29)
+    at processFullBinaryRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2393:9)
+    at processBinaryChunk (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2502:221)
+    at progress (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2689:13)
+    at form (<anonymous>)
+    at DashboardShell (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/_10xky28._.js:1527:243)
+    at Home (app\page.tsx:14:10)
+> 1 | export {logoutAction as '00e7eaa4feedaa68160597c2552e449b8c5efcd7b4'} from 'ACTIONS_MODULE0'
+    | ^
+  2 | export {deleteInvoiceAction as '407581705c6d769c9b374f3e11795566e9d535f0d1'} from 'ACTIONS_...
+  3 | export {createInvoiceAction as '606c47805a8088497afa6a85901da02a25453feed8'} from 'ACTIONS_...
+  4 |
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+      <RedirectBoundary>
+        <RedirectErrorBoundary router={{...}}>
+          <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+            <SegmentViewNode type="page" pagePath="page.tsx">
+              <SegmentTrieNode>
+              <Home>
+                <DashboardShell data={{...}} csrfToken="926e26ec04...">
+                  <div className="min-h-scre...">
+                    <aside>
+                    <div className="lg:pl-72">
+                      <header>
+                      <main className="px-4 py-6 ...">
+                        <div className="mx-auto fl...">
+                          <section className="flex flex-...">
+                            <div>
+                            <div className="grid grid-...">
+                              <Button type="button" variant="outline">
+                                <button
+                                  data-slot="button"
+                                  className={"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded..."}
+                                  type="button"
+-                                 fdprocessedid="sqknuw"
+                                >
++                                 Export
+                              <Button type="button">
+                                <button
+                                  data-slot="button"
+                                  className={"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded..."}
+                                  type="button"
+-                                 fdprocessedid="7plnv5"
+                                >
+                          <section>
+                          <InvoiceForm csrfToken="926e26ec04...">
+                            <form action={function bound dispatchActionState} className="rounded-lg...">
+                              <input>
+                              ...
+                                <div className="grid grid-...">
+                                  <div className="space-y-2">
+                                    <label>
+                                    <Input id="invoice-nu..." name="invoiceNo" defaultValue="INV-202605..." ...>
+                                      <input
+                                        type={undefined}
+                                        data-slot="input"
+                                        className="h-10 w-full min-w-0 rounded-md border border-input bg-background px..."
+                                        id="invoice-number"
+                                        name="invoiceNo"
+                                        defaultValue="INV-20260514-9130"
+                                        required={true}
+-                                       fdprocessedid="svgaka"
+                                      >
+                                  ...
+                              <div className="grid gap-6...">
+                                <div className="space-y-6">
+                                  <div className="grid gap-4...">
+                                    <div className="space-y-2">
+                                      <label>
+                                      <Input id="customer-name" name="customerName" placeholder="Customer name" ...>
+                                        <input
+                                          type={undefined}
+                                          data-slot="input"
+                                          className="h-10 w-full min-w-0 rounded-md border border-input bg-background ..."
+                                          id="customer-name"
+                                          name="customerName"
+                                          placeholder="Customer name"
+                                          required={true}
+-                                         fdprocessedid="99l7k"
+                                        >
+                                    <div className="space-y-2">
+                                      <label>
+                                      <Input id="customer-e..." name="customerEmail" type="email" ...>
+                                        <input
+                                          type="email"
+                                          data-slot="input"
+                                          className="h-10 w-full min-w-0 rounded-md border border-input bg-background ..."
+                                          id="customer-email"
+                                          name="customerEmail"
+                                          placeholder="billing@example.com"
+-                                         fdprocessedid="9a440r"
+                                        >
+                                    <div className="space-y-2">
+                                      <label>
+                                      <Input id="customer-p..." name="customerPhone" placeholder="+1 555 0199">
+                                        <input
+                                          type={undefined}
+                                          data-slot="input"
+                                          className="h-10 w-full min-w-0 rounded-md border border-input bg-background ..."
+                                          id="customer-phone"
+                                          name="customerPhone"
+                                          placeholder="+1 555 0199"
+-                                         fdprocessedid="y8rce"
+                                        >
+                                    <div className="space-y-2">
+                                      <label>
+                                      <select
+                                        id="invoice-status"
+                                        name="status"
+                                        className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 ..."
+                                        defaultValue="draft"
+-                                       fdprocessedid="oaohr7"
+                                      >
+                                  <div className="space-y-3">
+                                    <div className="flex items...">
+                                      <h3>
+                                      <Button type="button" variant="outline" size="sm" onClick={function addItem}>
+                                        <button
+                                          data-slot="button"
+                                          className={"inline-flex items-center justify-center whitespace-nowrap text-..."}
+                                          type="button"
+                                          onClick={function addItem}
+-                                         fdprocessedid="qde85"
+                                        >
+                                    <div>
+                                    <div className="space-y-3">
+                                      <div className="grid gap-3...">
+                                        <div className="space-y-2 ...">
+                                          <label>
+                                          <Input id="item-descr..." name="items.0.de..." value="Brand iden..." ...>
+                                            <input
+                                              type={undefined}
+                                              data-slot="input"
+                                              className="h-10 w-full min-w-0 rounded-md border border-input bg-backgro..."
+                                              id="item-description-brand-identity-design"
+                                              name="items.0.description"
+                                              value="Brand identity design"
+                                              placeholder="Item description"
+                                              required={true}
+                                              onChange={function onChange}
+-                                             fdprocessedid="05pxao"
+                                            >
+                                        <div className="space-y-2 ...">
+                                          <label>
+                                          <Input id="item-quant..." inputMode="decimal" min="0" name="items.0.qu..." ...>
+                                            <input
+                                              type="number"
+                                              data-slot="input"
+                                              className="h-10 w-full min-w-0 rounded-md border border-input bg-backgro..."
+                                              id="item-quantity-brand-identity-design"
+                                              inputMode="decimal"
+                                              min="0"
+                                              name="items.0.quantity"
+                                              step="1"
+                                              value={1}
+                                              onChange={function onChange}
+-                                             fdprocessedid="qebk1"
+                                            >
+                                        <div className="space-y-2 ...">
+                                          <label>
+                                          <Input id="item-rate-..." inputMode="decimal" min="0" name="items.0.rate" ...>
+                                            <input
+                                              type="number"
+                                              data-slot="input"
+                                              className="h-10 w-full min-w-0 rounded-md border border-input bg-backgro..."
+                                              id="item-rate-brand-identity-design"
+                                              inputMode="decimal"
+                                              min="0"
+                                              name="items.0.rate"
+                                              step="0.01"
+                                              value={1200}
+                                              onChange={function onChange}
+-                                             fdprocessedid="dozu7"
+                                            >
+                                        <div>
+                                        <Button type="button" variant="ghost" size="icon" aria-label="Remove item 1" ...>
+                                          <button
+                                            data-slot="button"
+                                            className={"inline-flex items-center justify-center gap-2 whitespace-nowr..."}
+                                            type="button"
+                                            aria-label="Remove item 1"
+                                            disabled={false}
+                                            onClick={function onClick}
+-                                           fdprocessedid="lgb2z"
+                                          >
+                                      <div className="grid gap-3...">
+                                        <div className="space-y-2 ...">
+                                          <label>
+                                          <Input id="item-descr..." name="items.1.de..." value="Monthly re..." ...>
+                                            <input
+                                              type={undefined}
+                                              data-slot="input"
+                                              className="h-10 w-full min-w-0 rounded-md border border-input bg-backgro..."
+                                              id="item-description-monthly-retainer"
+                                              name="items.1.description"
+                                              value="Monthly retainer"
+                                              placeholder="Item description"
+                                              required={true}
+                                              onChange={function onChange}
+-                                             fdprocessedid="y319ki"
+                                            >
+                                        <div className="space-y-2 ...">
+                                          <label>
+                                          <Input id="item-quant..." inputMode="decimal" min="0" name="items.1.qu..." ...>
+                                            <input
+                                              type="number"
+                                              data-slot="input"
+                                              className="h-10 w-full min-w-0 rounded-md border border-input bg-backgro..."
+                                              id="item-quantity-monthly-retainer"
+                                              inputMode="decimal"
+                                              min="0"
+                                              name="items.1.quantity"
+                                              step="1"
+                                              value={2}
+                                              onChange={function onChange}
+-                                             fdprocessedid="sqkts"
+                                            >
+                                        <div className="space-y-2 ...">
+                                          <label>
+                                          <Input id="item-rate-..." inputMode="decimal" min="0" name="items.1.rate" ...>
+                                            <input
+                                              type="number"
+                                              data-slot="input"
+                                              className="h-10 w-full min-w-0 rounded-md border border-input bg-backgro..."
+                                              id="item-rate-monthly-retainer"
+                                              inputMode="decimal"
+                                              min="0"
+                                              name="items.1.rate"
+                                              step="0.01"
+                                              value={450}
+                                              onChange={function onChange}
+-                                             fdprocessedid="hz254g"
+                                            >
+                                        <div>
+                                        <Button type="button" variant="ghost" size="icon" aria-label="Remove item 2" ...>
+                                          <button
+                                            data-slot="button"
+                                            className={"inline-flex items-center justify-center gap-2 whitespace-nowr..."}
+                                            type="button"
+                                            aria-label="Remove item 2"
+                                            disabled={false}
+                                            onClick={function onClick}
+-                                           fdprocessedid="0x0s69"
+                                          >
+                                  ...
+                                <aside className="h-fit roun...">
+                                  <h3>
+                                  <div className="mt-4 space...">
+                                    <div>
+                                    <div className="flex items...">
+                                      <label>
+                                      <div className="flex w-28 ...">
+                                        <Input id="tax-rate" className="h-8 border..." inputMode="decimal" min="0" ...>
+                                          <input
+                                            type="number"
+                                            data-slot="input"
+                                            className="w-full min-w-0 rounded-md border-input bg-background px-3 py-2 ..."
+                                            id="tax-rate"
+                                            inputMode="decimal"
+                                            min="0"
+                                            name="taxRate"
+                                            step="0.01"
+                                            value={8}
+                                            onChange={function onChange}
+-                                           fdprocessedid="enhy7a"
+                                          >
+                                        ...
+                                    ...
+                                  <div className="mt-5 grid ...">
+                                    <Button type="submit" disabled={false}>
+                                      <button
+                                        data-slot="button"
+                                        className={"inline-flex items-center justify-center gap-2 whitespace-nowrap r..."}
+                                        type="submit"
+                                        disabled={false}
+-                                       fdprocessedid="kpofdd"
+                                      >
++                                       Save invoice
+                                    <Button type="button" variant="outline">
+                                      <button
+                                        data-slot="button"
+                                        className={"inline-flex items-center justify-center gap-2 whitespace-nowrap r..."}
+                                        type="button"
+-                                       fdprocessedid="zz2u6t"
+                                      >
++                                       Preview invoice
+                                  ...
+                          <section className="grid gap-4...">
+                            <div className="rounded-lg...">
+                              <div className="flex items...">
+                                <div>
+                                <Button type="button" variant="outline" className="hidden sm:...">
+                                  <button
+                                    data-slot="button"
+                                    className={"items-center justify-center gap-2 whitespace-nowrap rounded-md text-s..."}
+                                    type="button"
+-                                   fdprocessedid="12tuu9"
+                                  >
++                                   View all
+                              ...
+                                <td className="px-5 py-4 ...">
+                                  <DeleteInvoiceButton invoice={{id:"cmp5hy...", ...}}>
+                                    <Button type="button" variant="ghost" size="sm" disabled={false} ...>
+                                      <button
+                                        data-slot="button"
+                                        className={"inline-flex items-center justify-center whitespace-nowrap text-sm..."}
+                                        type="button"
+                                        disabled={false}
+                                        onClick={function onClick}
+-                                       fdprocessedid="7evpf"
+                                      >
++                                       Delete
+                            ...
+            ...
+          ...
+ 
+    at <unknown> (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3439:25)
+    at runWithFiberInDEV (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at emitPendingHydrationWarnings (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3438:13)
+    at completeWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6885:102)
+    at runWithFiberInDEV (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:131)
+    at completeUnitOfWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9622:23)
+    at performUnitOfWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9557:28)
+    at workLoopConcurrentByScheduler (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9551:58)
+    at renderRootConcurrent (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9534:71)
+    at performWorkOnRoot (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64) (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3439:25)
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].invoice.findMany()` invocation in
+D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__0333qtk._.js:682:140
+
+  679     });
+  680 }
+  681 async function listInvoices(userId, isAdmin = false) {
+→ 682     return {imported module ./lib/prisma.ts}["prisma"].invoice.findMany(
+Can't reach database server at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (lib\invoices.ts:112:25)
+    at async InvoicesPage (app\invoices\page.tsx:31:20)
+  110 |
+  111 | export async function listInvoices(userId: string, isAdmin = false) {
+> 112 |   return prisma.invoice.findMany({
+      |                         ^
+  113 |     where: isAdmin ? undefined : { userId },
+  114 |     orderBy: { createdAt: "desc" },
+  115 |     include: { {
+  code: 'P1001',
+  meta: {
+    modelName: 'Invoice',
+    database_location: 'ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432'
+  },
+  clientVersion: '6.19.3',
+  digest: '256101426'
+}
+[browser] Uncaught PrismaClientKnownRequestError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].invoice.findMany()` invocation in
+D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__0333qtk._.js:682:140
+
+  679     });
+  680 }
+  681 async function listInvoices(userId, isAdmin = false) {
+→ 682     return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].invoice.findMany(
+Can't reach database server at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (lib\invoices.ts:112:25)
+    at InvoicesPage (app\invoices\page.tsx:31:20)
+    at resolveErrorDev (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:1919:150)
+    at processFullStringRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2434:29)
+    at processFullBinaryRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2393:9)
+    at processBinaryChunk (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2502:221)
+    at progress (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2689:13)
+  110 |
+  111 | export async function listInvoices(userId: string, isAdmin = false) {
+> 112 |   return prisma.invoice.findMany({
+      |                         ^
+  113 |     where: isAdmin ? undefined : { userId },
+  114 |     orderBy: { createdAt: "desc" },
+  115 |     include: {
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].invoice.findMany()` invocation in
+D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__0333qtk._.js:682:140
+
+  679     });
+  680 }
+  681 async function listInvoices(userId, isAdmin = false) {
+→ 682     return {imported module ./lib/prisma.ts}["prisma"].invoice.findMany(
+Can't reach database server at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (lib\invoices.ts:112:25)
+    at async InvoicesPage (app\invoices\page.tsx:31:20)
+  110 |
+  111 | export async function listInvoices(userId: string, isAdmin = false) {
+> 112 |   return prisma.invoice.findMany({
+      |                         ^
+  113 |     where: isAdmin ? undefined : { userId },
+  114 |     orderBy: { createdAt: "desc" },
+  115 |     include: { {
+  code: 'P1001',
+  meta: {
+    modelName: 'Invoice',
+    database_location: 'ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432'
+  },
+  clientVersion: '6.19.3',
+  digest: '256101426'
+}
+[browser] Uncaught PrismaClientKnownRequestError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].invoice.findMany()` invocation in
+D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__0333qtk._.js:682:140
+
+  679     });
+  680 }
+  681 async function listInvoices(userId, isAdmin = false) {
+→ 682     return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].invoice.findMany(
+Can't reach database server at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (lib\invoices.ts:112:25)
+    at InvoicesPage (app\invoices\page.tsx:31:20)
+    at resolveErrorDev (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:1919:105)
+    at processFullStringRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2434:29)
+    at processFullBinaryRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2393:9)
+    at processBinaryChunk (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2502:221)
+    at progress (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2689:13)
+  110 |
+  111 | export async function listInvoices(userId: string, isAdmin = false) {
+> 112 |   return prisma.invoice.findMany({
+      |                         ^
+  113 |     where: isAdmin ? undefined : { userId },
+  114 |     orderBy: { createdAt: "desc" },
+  115 |     include: {
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].invoice.findMany()` invocation in
+D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__0333qtk._.js:682:140
+
+  679     });
+  680 }
+  681 async function listInvoices(userId, isAdmin = false) {
+→ 682     return {imported module ./lib/prisma.ts}["prisma"].invoice.findMany(
+Can't reach database server at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (lib\invoices.ts:112:25)
+    at async CustomersPage (app\customers\page.tsx:21:20)
+  110 |
+  111 | export async function listInvoices(userId: string, isAdmin = false) {
+> 112 |   return prisma.invoice.findMany({
+      |                         ^
+  113 |     where: isAdmin ? undefined : { userId },
+  114 |     orderBy: { createdAt: "desc" },
+  115 |     include: { {
+  code: 'P1001',
+  meta: {
+    modelName: 'Invoice',
+    database_location: 'ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432'
+  },
+  clientVersion: '6.19.3',
+  digest: '2659922529'
+}
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].invoice.findMany()` invocation in
+D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__0333qtk._.js:682:140
+
+  679     });
+  680 }
+  681 async function listInvoices(userId, isAdmin = false) {
+→ 682     return {imported module ./lib/prisma.ts}["prisma"].invoice.findMany(
+Can't reach database server at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (lib\invoices.ts:112:25)
+    at async CustomersPage (app\customers\page.tsx:21:20)
+  110 |
+  111 | export async function listInvoices(userId: string, isAdmin = false) {
+> 112 |   return prisma.invoice.findMany({
+      |                         ^
+  113 |     where: isAdmin ? undefined : { userId },
+  114 |     orderBy: { createdAt: "desc" },
+  115 |     include: { {
+  code: 'P1001',
+  meta: {
+    modelName: 'Invoice',
+    database_location: 'ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432'
+  },
+  clientVersion: '6.19.3',
+  digest: '2659922529'
+}
+[browser] Uncaught PrismaClientKnownRequestError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].invoice.findMany()` invocation in
+D:\Developed Apps\Invoice Generator\invoice-generator\.next\dev\server\chunks\ssr\[root-of-the-server]__0333qtk._.js:682:140
+
+  679     });
+  680 }
+  681 async function listInvoices(userId, isAdmin = false) {
+→ 682     return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].invoice.findMany(
+Can't reach database server at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-spring-breeze-ap8sav7w.c-7.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (lib\invoices.ts:112:25)
+    at CustomersPage (app\customers\page.tsx:21:20)
+    at resolveErrorDev (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:1919:105)
+    at processFullStringRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2434:29)
+    at processFullBinaryRow (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2393:9)
+    at processBinaryChunk (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2502:221)
+    at progress (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2689:13)
+  110 |
+  111 | export async function listInvoices(userId: string, isAdmin = false) {
+> 112 |   return prisma.invoice.findMany({
+      |                         ^
+  113 |     where: isAdmin ? undefined : { userId },
+  114 |     orderBy: { createdAt: "desc" },
+  115 |     include: {
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+[browser] Uncaught Error: ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+
+./app/reports
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/reports and /reports.
+
+[browser] Uncaught Error: ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+
+./app/reports
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/reports and /reports.
+
+[browser] Uncaught Error: ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+
+./app/reports
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/reports and /reports.
+
+
+./app/settings
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/settings and /settings.
+
+[browser] Uncaught Error: ./app/payments
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/payments and /payments.
+
+⨯ ./app/invoices
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/invoices/[id]/edit and /invoices.
+
+
+./app/invoices
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/invoices/new and /invoices.
+
+[browser] Uncaught Error: ./app/invoices
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/invoices/[id]/edit and /invoices.
+
+⨯ ./app/invoices
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/invoices/[id]/edit and /invoices.
+
+[browser] Uncaught Error: ./app/invoices
+You cannot have two parallel pages that resolve to the same path. Please check /(dashboard)/invoices/[id]/edit and /invoices.
+
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RedirectErrorBoundary router={{...}}>
+      <InnerLayoutRouter url="/customers" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+        <LoadingBoundaryProvider loading={[...]}>
+          <SegmentViewNode type="layout" pagePath="(dashboard...">
+            <SegmentTrieNode>
+            <script>
+            <script>
+            <script>
+            <DashboardLayout>
+              <AppShell>
+                <div className="min-h-scre...">
+                  <aside>
+                  <div className="lg:pl-72">
+                    <header className="sticky top...">
+                      <div className="flex h-16 ...">
+                        <Button>
+                        <div>
+                        <div className="ml-auto fl...">
+                          <Button type="button" variant="outline" size="icon" aria-label="Notifications">
+                            <button
+                              data-slot="button"
+                              className={"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md ..."}
+                              type="button"
+                              aria-label="Notifications"
+-                             fdprocessedid="cgccqm"
+                            >
+                          <form action={function logoutAction}>
+                            <Button type="submit" variant="outline">
+                              <button
+                                data-slot="button"
+                                className={"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-m..."}
+                                type="submit"
+-                               fdprocessedid="2m7ydj"
+                              >
++                               Logout
+                    ...
+      ...
+ 
+    at <unknown> (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3439:25)
+    at runWithFiberInDEV (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at emitPendingHydrationWarnings (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3438:13)
+    at completeWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:7065:32)
+    at runWithFiberInDEV (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at completeUnitOfWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9622:23)
+    at performUnitOfWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9557:28)
+    at workLoopConcurrentByScheduler (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9551:58)
+    at renderRootConcurrent (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9534:71)
+    at performWorkOnRoot (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64) (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3439:25)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndMaybeFocusHandler cacheNode={{rsc:{...}, ...}}>
+        <InnerScrollAndFocusHandlerOld focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="customers/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/customers" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="(dashboard...">
+                        <SegmentTrieNode>
+                        <CustomersPage>
+                          <section>
+                          <QueryFilterForm className="grid gap-3...">
+                            <form className="grid gap-3..." onSubmit={function onSubmit} data-pending="false">
+                              <input
+                                name="q"
+                                defaultValue=""
+                                placeholder="Search name, email, phone"
+                                className="h-10 rounded-md border border-input bg-background px-3 text-sm xl:col-span-2"
+-                               fdprocessedid="rdppqg"
+                              >
+                              <input
+                                name="minInvoices"
+                                type="number"
+                                min="0"
+                                defaultValue="0"
+                                placeholder="Min invoices"
+                                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+-                               fdprocessedid="an5jdn"
+                              >
+                              <select
+                                name="sort"
+                                defaultValue="billed_desc"
+                                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+-                               fdprocessedid="5ark26"
+                              >
+                              <button
+                                type="submit"
+                                className="h-10 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+-                               fdprocessedid="uza29s"
+                              >
++                               Apply
+                          ...
+                      ...
+                    ...
+          ...
+ 
+    at <unknown> (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3439:25)
+    at runWithFiberInDEV (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at emitPendingHydrationWarnings (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3438:13)
+    at completeWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:7065:32)
+    at runWithFiberInDEV (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at completeUnitOfWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9622:23)
+    at performUnitOfWork (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9557:28)
+    at workLoopConcurrentByScheduler (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9551:58)
+    at renderRootConcurrent (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9534:71)
+    at performWorkOnRoot (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64) (file://D:/Developed Apps/Invoice Generator/invoice-generator/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3439:25)
+⨯ ./app/(dashboard)/page.tsx:1:1
+Module not found: Can't resolve '@/components/dashboard-shell'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { [33mDashboardShell[0m } [36mfrom[0m [32m"@/components/dashboard-shell"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { requireSession } [36mfrom[0m [32m"@/lib/auth/session"[0m;
+  [90m3 |[0m [36mimport[0m { getDashboardData } [36mfrom[0m [32m"@/lib/invoices"[0m;
+  [90m4 |[0m
+
+Import map: aliased to relative './components/dashboard-shell' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/(dashboard)/page.tsx:1:1
+Module not found: Can't resolve '@/components/dashboard-shell'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { [33mDashboardShell[0m } [36mfrom[0m [32m"@/components/dashboard-shell"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { requireSession } [36mfrom[0m [32m"@/lib/auth/session"[0m;
+  [90m3 |[0m [36mimport[0m { getDashboardData } [36mfrom[0m [32m"@/lib/invoices"[0m;
+  [90m4 |[0m
+
+Import map: aliased to relative './components/dashboard-shell' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/(dashboard)/page.tsx:1:1
+Module not found: Can't resolve '@/components/dashboard-shell'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { [33mDashboardShell[0m } [36mfrom[0m [32m"@/components/dashboard-shell"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { requireSession } [36mfrom[0m [32m"@/lib/auth/session"[0m;
+  [90m3 |[0m [36mimport[0m { getDashboardData } [36mfrom[0m [32m"@/lib/invoices"[0m;
+  [90m4 |[0m
+
+Import map: aliased to relative './components/dashboard-shell' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/(dashboard)/page.tsx:1:1
+Module not found: Can't resolve '@/components/dashboard-shell'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { [33mDashboardShell[0m } [36mfrom[0m [32m"@/components/dashboard-shell"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { requireSession } [36mfrom[0m [32m"@/lib/auth/session"[0m;
+  [90m3 |[0m [36mimport[0m { getDashboardData } [36mfrom[0m [32m"@/lib/invoices"[0m;
+  [90m4 |[0m
+
+Import map: aliased to relative './components/dashboard-shell' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/(dashboard)/page.tsx:1:1
+Module not found: Can't resolve '@/components/dashboard-shell'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { [33mDashboardShell[0m } [36mfrom[0m [32m"@/components/dashboard-shell"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { requireSession } [36mfrom[0m [32m"@/lib/auth/session"[0m;
+  [90m3 |[0m [36mimport[0m { getDashboardData } [36mfrom[0m [32m"@/lib/invoices"[0m;
+  [90m4 |[0m
+
+Import map: aliased to relative './components/dashboard-shell' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/(dashboard)/page.tsx:1:1
+Module not found: Can't resolve '@/components/dashboard-shell'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { [33mDashboardShell[0m } [36mfrom[0m [32m"@/components/dashboard-shell"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { requireSession } [36mfrom[0m [32m"@/lib/auth/session"[0m;
+  [90m3 |[0m [36mimport[0m { getDashboardData } [36mfrom[0m [32m"@/lib/invoices"[0m;
+  [90m4 |[0m
+
+Import map: aliased to relative './components/dashboard-shell' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[browser] Uncaught Error: ./app/(dashboard)/page.tsx:1:1
+Module not found: Can't resolve '@/components/dashboard-shell'
+> 1 | import { DashboardShell } from "@/components/dashboard-shell";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { requireSession } from "@/lib/auth/session";
+  3 | import { getDashboardData } from "@/lib/invoices";
+  4 |
+
+Import map: aliased to relative './components/dashboard-shell' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./app/(dashboard)/page.tsx:1:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (Error: (./app/(dashboard)/page.tsx:1:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)

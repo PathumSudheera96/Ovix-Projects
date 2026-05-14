@@ -1,7 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
+import { auth } from "@/auth";
+import { assertValidCsrf } from "@/lib/auth/csrf";
 import {
   createInvoice,
   deleteInvoice,
@@ -65,6 +68,37 @@ function readInvoiceInput(formData: FormData): InvoiceInput {
   };
 }
 
+const invoiceInputSchema = z.object({
+  invoiceNo: z.string().trim().min(1).max(50),
+  customerName: z.string().trim().min(2).max(120),
+  customerEmail: z.string().trim().email().max(254).or(z.literal("")),
+  customerPhone: z.string().trim().max(30).or(z.literal("")),
+  status: z.enum(["draft", "sent", "paid", "overdue"]),
+  dueDate: z.date().nullable(),
+  notes: z.string().max(1000),
+  taxRate: z.number().min(0).max(100),
+  items: z
+    .array(
+      z.object({
+        description: z.string().trim().min(1).max(200),
+        quantity: z.number().int().min(1).max(100000),
+        price: z.number().min(0).max(100000000),
+      })
+    )
+    .min(1),
+});
+const invoiceStatusSchema = z.enum(["draft", "sent", "paid", "overdue"]);
+
+function parseInvoiceInput(formData: FormData): InvoiceInput {
+  const parsed = invoiceInputSchema.safeParse(readInvoiceInput(formData));
+
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0]?.message ?? "Invalid invoice input.");
+  }
+
+  return parsed.data;
+}
+
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) {
     return error.message;
@@ -73,12 +107,39 @@ function getErrorMessage(error: unknown) {
   return "Something went wrong.";
 }
 
+async function getSessionScope() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized.");
+  }
+
+  return {
+    userId: session.user.id,
+    isAdmin: session.user.role === "ADMIN",
+  };
+}
+
+async function ensureCsrf(formData: FormData): Promise<string | null> {
+  try {
+    await assertValidCsrf(formData);
+    return null;
+  } catch {
+    return "Security token expired. Refresh and try again.";
+  }
+}
+
 export async function createInvoiceAction(
   _state: InvoiceActionState,
   formData: FormData
 ): Promise<InvoiceActionState> {
   try {
-    const invoice = await createInvoice(readInvoiceInput(formData));
+    const csrfError = await ensureCsrf(formData);
+    if (csrfError) {
+      return { ok: false, message: csrfError };
+    }
+    const scope = await getSessionScope();
+    const invoice = await createInvoice(parseInvoiceInput(formData), scope.userId);
 
     revalidatePath("/");
 
@@ -100,7 +161,17 @@ export async function updateInvoiceAction(
   formData: FormData
 ): Promise<InvoiceActionState> {
   try {
-    const invoice = await updateInvoice(id, readInvoiceInput(formData));
+    const csrfError = await ensureCsrf(formData);
+    if (csrfError) {
+      return { ok: false, message: csrfError };
+    }
+    const scope = await getSessionScope();
+    const invoice = await updateInvoice(
+      id,
+      parseInvoiceInput(formData),
+      scope.userId,
+      scope.isAdmin
+    );
 
     revalidatePath("/");
 
@@ -116,15 +187,56 @@ export async function updateInvoiceAction(
   }
 }
 
+export async function updateInvoiceStatusAction(id: string, status: string) {
+  const parsed = invoiceStatusSchema.safeParse(status);
+  if (!parsed.success) {
+    throw new Error("Invalid status.");
+  }
+
+  const scope = await getSessionScope();
+  const invoice = await getInvoice(id, scope.userId, scope.isAdmin);
+
+  if (!invoice) {
+    throw new Error("Invoice not found.");
+  }
+
+  await updateInvoice(
+    id,
+    {
+      invoiceNo: invoice.invoiceNo,
+      customerName: invoice.customer.name,
+      customerEmail: invoice.customer.email ?? "",
+      customerPhone: invoice.customer.phone ?? "",
+      status: parsed.data,
+      dueDate: invoice.dueDate,
+      notes: invoice.notes ?? "",
+      taxRate: invoice.subtotal > 0 ? (invoice.tax / invoice.subtotal) * 100 : 0,
+      items: invoice.items.map((item) => ({
+        description: item.description,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    },
+    scope.userId,
+    scope.isAdmin
+  );
+
+  revalidatePath("/");
+  revalidatePath("/invoices");
+}
+
 export async function deleteInvoiceAction(id: string) {
-  await deleteInvoice(id);
+  const scope = await getSessionScope();
+  await deleteInvoice(id, scope.userId, scope.isAdmin);
   revalidatePath("/");
 }
 
 export async function getInvoiceAction(id: string) {
-  return getInvoice(id);
+  const scope = await getSessionScope();
+  return getInvoice(id, scope.userId, scope.isAdmin);
 }
 
 export async function listInvoicesAction() {
-  return listInvoices();
+  const scope = await getSessionScope();
+  return listInvoices(scope.userId, scope.isAdmin);
 }

@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
-const DEMO_USER_EMAIL = "demo@invoiceflow.local";
+import { prisma } from "@/lib/prisma";
 
 export type InvoiceItemInput = {
   description: string;
@@ -81,17 +81,6 @@ function getTotals(items: InvoiceItemInput[], taxRate = 0) {
   };
 }
 
-async function getDemoUserId() {
-  const user = await prisma.user.upsert({
-    where: { email: DEMO_USER_EMAIL },
-    update: {},
-    create: { email: DEMO_USER_EMAIL },
-    select: { id: true },
-  });
-
-  return user.id;
-}
-
 async function findOrCreateCustomer(input: InvoiceInput) {
   const email = cleanOptional(input.customerEmail);
   const existingCustomer = email
@@ -119,8 +108,9 @@ async function findOrCreateCustomer(input: InvoiceInput) {
   });
 }
 
-export async function listInvoices() {
+export async function listInvoices(userId: string, isAdmin = false) {
   return prisma.invoice.findMany({
+    where: isAdmin ? undefined : { userId },
     orderBy: { createdAt: "desc" },
     include: {
       customer: true,
@@ -131,9 +121,9 @@ export async function listInvoices() {
   });
 }
 
-export async function getInvoice(id: string) {
-  return prisma.invoice.findUnique({
-    where: { id },
+export async function getInvoice(id: string, userId: string, isAdmin = false) {
+  return prisma.invoice.findFirst({
+    where: { id, ...(isAdmin ? {} : { userId }) },
     include: {
       customer: true,
       items: true,
@@ -141,7 +131,7 @@ export async function getInvoice(id: string) {
   });
 }
 
-export async function createInvoice(input: InvoiceInput) {
+export async function createInvoice(input: InvoiceInput, userId: string) {
   const items = normalizeItems(input.items);
 
   if (!input.invoiceNo.trim()) {
@@ -156,54 +146,11 @@ export async function createInvoice(input: InvoiceInput) {
     throw new Error("Add at least one invoice item.");
   }
 
-  const [userId, customer] = await Promise.all([
-    getDemoUserId(),
-    findOrCreateCustomer(input),
-  ]);
-  const totals = getTotals(items, input.taxRate);
-
-  return prisma.invoice.create({
-    data: {
-      invoiceNo: input.invoiceNo.trim(),
-      subtotal: totals.subtotal,
-      tax: totals.tax,
-      total: totals.total,
-      status: input.status ?? "draft",
-      dueDate: input.dueDate ?? null,
-      notes: cleanOptional(input.notes),
-      userId,
-      customerId: customer.id,
-      items: {
-        create: items.map((item) => ({
-          description: item.description,
-          quantity: item.quantity,
-          price: item.price,
-          total: item.quantity * item.price,
-        })),
-      },
-    },
-    include: {
-      customer: true,
-      items: true,
-    },
-  });
-}
-
-export async function updateInvoice(id: string, input: InvoiceInput) {
-  const items = normalizeItems(input.items);
-
-  if (items.length === 0) {
-    throw new Error("Add at least one invoice item.");
-  }
-
   const customer = await findOrCreateCustomer(input);
   const totals = getTotals(items, input.taxRate);
 
-  return prisma.$transaction(async (tx) => {
-    await tx.invoiceItem.deleteMany({ where: { invoiceId: id } });
-
-    return tx.invoice.update({
-      where: { id },
+  try {
+    return await prisma.invoice.create({
       data: {
         invoiceNo: input.invoiceNo.trim(),
         subtotal: totals.subtotal,
@@ -212,6 +159,7 @@ export async function updateInvoice(id: string, input: InvoiceInput) {
         status: input.status ?? "draft",
         dueDate: input.dueDate ?? null,
         notes: cleanOptional(input.notes),
+        userId,
         customerId: customer.id,
         items: {
           create: items.map((item) => ({
@@ -227,19 +175,105 @@ export async function updateInvoice(id: string, input: InvoiceInput) {
         items: true,
       },
     });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw new Error("Invoice number already exists. Please use a new number.");
+    }
+
+    throw error;
+  }
+}
+
+export async function updateInvoice(
+  id: string,
+  input: InvoiceInput,
+  userId: string,
+  isAdmin = false
+) {
+  const items = normalizeItems(input.items);
+
+  if (items.length === 0) {
+    throw new Error("Add at least one invoice item.");
+  }
+
+  const customer = await findOrCreateCustomer(input);
+  const totals = getTotals(items, input.taxRate);
+
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.invoice.findFirst({
+      where: { id, ...(isAdmin ? {} : { userId }) },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      throw new Error("Invoice not found.");
+    }
+
+    await tx.invoiceItem.deleteMany({ where: { invoiceId: id } });
+
+    try {
+      return await tx.invoice.update({
+        where: { id },
+        data: {
+          invoiceNo: input.invoiceNo.trim(),
+          subtotal: totals.subtotal,
+          tax: totals.tax,
+          total: totals.total,
+          status: input.status ?? "draft",
+          dueDate: input.dueDate ?? null,
+          notes: cleanOptional(input.notes),
+          customerId: customer.id,
+          items: {
+            create: items.map((item) => ({
+              description: item.description,
+              quantity: item.quantity,
+              price: item.price,
+              total: item.quantity * item.price,
+            })),
+          },
+        },
+        include: {
+          customer: true,
+          items: true,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        throw new Error("Invoice number already exists. Please use a new number.");
+      }
+
+      throw error;
+    }
   });
 }
 
-export async function deleteInvoice(id: string) {
+export async function deleteInvoice(id: string, userId: string, isAdmin = false) {
   return prisma.$transaction(async (tx) => {
+    const existing = await tx.invoice.findFirst({
+      where: { id, ...(isAdmin ? {} : { userId }) },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      throw new Error("Invoice not found.");
+    }
+
     await tx.invoiceItem.deleteMany({ where: { invoiceId: id } });
 
     return tx.invoice.delete({ where: { id } });
   });
 }
 
-export async function getDashboardData(): Promise<DashboardData> {
+export async function getDashboardData(userId: string, isAdmin = false): Promise<DashboardData> {
+  const scope = isAdmin ? {} : { userId };
   const invoices = await prisma.invoice.findMany({
+    where: scope,
     orderBy: { createdAt: "desc" },
     take: 8,
     include: { customer: true },
@@ -247,15 +281,15 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const [paidRevenue, outstanding, paidInvoices, drafts] = await Promise.all([
     prisma.invoice.aggregate({
-      where: { status: "paid" },
+      where: { ...scope, status: "paid" },
       _sum: { total: true },
     }),
     prisma.invoice.aggregate({
-      where: { status: { in: ["sent", "overdue"] } },
+      where: { ...scope, status: { in: ["sent", "overdue"] } },
       _sum: { total: true },
     }),
-    prisma.invoice.count({ where: { status: "paid" } }),
-    prisma.invoice.count({ where: { status: "draft" } }),
+    prisma.invoice.count({ where: { ...scope, status: "paid" } }),
+    prisma.invoice.count({ where: { ...scope, status: "draft" } }),
   ]);
 
   return {
