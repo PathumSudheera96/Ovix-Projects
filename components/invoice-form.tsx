@@ -546,16 +546,17 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
       </div>
       {previewOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm">
-          <div className="relative max-h-[90vh] w-full max-w-3xl overflow-auto rounded-lg border bg-card p-6 shadow-xl">
+          <div className="relative w-full max-w-3xl">
             <Button
               type="button"
               size="icon"
-              className="absolute -right-3 -top-3 rounded-full shadow-md"
+              className="absolute -top-12 right-0 rounded-full shadow-md"
               onClick={() => setPreviewOpen(false)}
               aria-label="Close preview"
             >
               <X className="size-4" />
             </Button>
+            <div className="max-h-[90vh] overflow-auto rounded-lg border bg-card p-6 shadow-xl">
             <div className="mb-8 grid gap-6 md:grid-cols-[1fr_auto]">
               <div className="flex items-start gap-3">
                 <div className="flex size-14 items-center justify-center overflow-hidden rounded-md border bg-muted">
@@ -619,6 +620,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 <span>{formatCurrency(totals.total, currency)}</span>
               </div>
             </div>
+          </div>
           </div>
         </div>
       ) : null}

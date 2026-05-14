@@ -142,6 +142,11 @@ export function DashboardShell({ data }: { data: DashboardData }) {
                       <td className="px-5 py-4 text-right">
                         <div className="inline-flex items-center gap-2">
                           <Button asChild type="button" variant="ghost" size="sm">
+                            <a href={`/api/invoices/${invoice.id}/export`} target="_blank" rel="noreferrer">
+                              Export
+                            </a>
+                          </Button>
+                          <Button asChild type="button" variant="ghost" size="sm">
                             <Link href={`/invoices/${invoice.id}/edit`}>Edit</Link>
                           </Button>
                           <DeleteInvoiceButton invoice={invoice} />
