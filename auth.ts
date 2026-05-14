@@ -53,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         const { email, password } = parsed.data;
-        const limiter = consumeRateLimit(`login:${email.toLowerCase()}`, 10, 10 * 60 * 1000);
+        const limiter = await consumeRateLimit(`login:${email.toLowerCase()}`, 10, 10 * 60 * 1000);
 
         if (!limiter.ok) {
           return null;

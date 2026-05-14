@@ -17,6 +17,8 @@ export type InvoiceInput = {
   dueDate?: Date | null;
   notes?: string;
   taxRate?: number;
+  discountType?: "none" | "percent" | "fixed";
+  discountValue?: number;
   items: InvoiceItemInput[];
 };
 
@@ -67,14 +69,29 @@ function normalizeItems(items: InvoiceItemInput[]) {
     .filter((item) => item.description && item.quantity > 0);
 }
 
-function getTotals(items: InvoiceItemInput[], taxRate = 0) {
-  const subtotal = items.reduce(
+function getTotals(
+  items: InvoiceItemInput[],
+  taxRate = 0,
+  discountType: "none" | "percent" | "fixed" = "none",
+  discountValue = 0
+) {
+  const rawSubtotal = items.reduce(
     (sum, item) => sum + item.quantity * item.price,
     0
   );
+  const safeDiscountValue = Math.max(0, discountValue);
+  const discount =
+    discountType === "percent"
+      ? rawSubtotal * (Math.min(100, safeDiscountValue) / 100)
+      : discountType === "fixed"
+        ? safeDiscountValue
+        : 0;
+  const subtotal = Math.max(0, rawSubtotal - discount);
   const tax = subtotal * (Math.max(0, taxRate) / 100);
 
   return {
+    rawSubtotal,
+    discount: Math.min(rawSubtotal, discount),
     subtotal,
     tax,
     total: subtotal + tax,
@@ -147,7 +164,7 @@ export async function createInvoice(input: InvoiceInput, userId: string) {
   }
 
   const customer = await findOrCreateCustomer(input);
-  const totals = getTotals(items, input.taxRate);
+  const totals = getTotals(items, input.taxRate, input.discountType, input.discountValue);
 
   try {
     return await prisma.invoice.create({
@@ -200,7 +217,7 @@ export async function updateInvoice(
   }
 
   const customer = await findOrCreateCustomer(input);
-  const totals = getTotals(items, input.taxRate);
+  const totals = getTotals(items, input.taxRate, input.discountType, input.discountValue);
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.invoice.findFirst({

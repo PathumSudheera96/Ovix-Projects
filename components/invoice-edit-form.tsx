@@ -263,7 +263,7 @@ export function InvoiceEditForm({
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-sm font-semibold">Invoice items</h3>
-              <Button type="button" variant="outline" size="sm" onClick={addItem}>
+              <Button type="button" variant="secondary" size="sm" onClick={addItem}>
                 <Plus className="size-4" />
                 Add item
               </Button>
@@ -302,7 +302,7 @@ export function InvoiceEditForm({
                   </div>
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="danger"
                     size="icon"
                     aria-label={`Remove item ${index + 1}`}
                     disabled={items.length === 1}
@@ -352,10 +352,10 @@ export function InvoiceEditForm({
             </div>
           </div>
           <div className="mt-5 grid gap-2">
-            <Button type="submit" disabled={isPending} className="w-full">
+            <Button type="submit" variant="success" disabled={isPending} className="w-full">
               {isPending ? "Saving..." : "Save changes"}
             </Button>
-            <Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>
+            <Button type="button" variant="info" onClick={() => setPreviewOpen(true)}>
               Preview invoice
             </Button>
           </div>

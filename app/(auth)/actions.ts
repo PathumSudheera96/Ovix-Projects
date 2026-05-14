@@ -135,7 +135,7 @@ export async function forgotPasswordAction(
       return csrfError;
     }
     const ip = readIp(await headers());
-    const limit = consumeRateLimit(`forgot:${ip}`, 6, 10 * 60 * 1000);
+    const limit = await consumeRateLimit(`forgot:${ip}`, 6, 10 * 60 * 1000);
 
     if (!limit.ok) {
       return { ok: false, message: "Too many requests. Try again later." };
@@ -169,8 +169,10 @@ export async function forgotPasswordAction(
 
       const resetUrl = `${env.APP_URL}/reset-password/${rawToken}`;
 
-      // In production, send this using your SMTP provider.
-      console.info(`[PASSWORD RESET LINK] ${user.email}: ${resetUrl}`);
+      // Never log raw reset tokens in production logs.
+      if (env.NODE_ENV !== "production") {
+        console.info(`[PASSWORD RESET LINK] ${user.email}: ${resetUrl}`);
+      }
     }
 
     return { ok: true, message: "If an account exists, reset instructions were sent." };

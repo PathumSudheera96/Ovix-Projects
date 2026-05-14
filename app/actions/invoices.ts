@@ -54,6 +54,7 @@ function readInvoiceItems(formData: FormData): InvoiceItemInput[] {
 
 function readInvoiceInput(formData: FormData): InvoiceInput {
   const dueDate = readString(formData, "dueDate");
+  const discountType = readString(formData, "discountType");
 
   return {
     invoiceNo: readString(formData, "invoiceNo"),
@@ -64,6 +65,11 @@ function readInvoiceInput(formData: FormData): InvoiceInput {
     dueDate: dueDate ? new Date(`${dueDate}T00:00:00`) : null,
     notes: readString(formData, "notes"),
     taxRate: readNumber(formData, "taxRate"),
+    discountType:
+      discountType === "percent" || discountType === "fixed"
+        ? discountType
+        : "none",
+    discountValue: readNumber(formData, "discountValue"),
     items: readInvoiceItems(formData),
   };
 }
@@ -77,6 +83,8 @@ const invoiceInputSchema = z.object({
   dueDate: z.date().nullable(),
   notes: z.string().max(1000),
   taxRate: z.number().min(0).max(100),
+  discountType: z.enum(["none", "percent", "fixed"]),
+  discountValue: z.number().min(0).max(100000000),
   items: z
     .array(
       z.object({
@@ -211,6 +219,8 @@ export async function updateInvoiceStatusAction(id: string, status: string) {
       dueDate: invoice.dueDate,
       notes: invoice.notes ?? "",
       taxRate: invoice.subtotal > 0 ? (invoice.tax / invoice.subtotal) * 100 : 0,
+      discountType: "none",
+      discountValue: 0,
       items: invoice.items.map((item) => ({
         description: item.description,
         quantity: item.quantity,

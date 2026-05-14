@@ -1,10 +1,12 @@
 import { cookies, headers } from "next/headers";
+import { timingSafeEqual } from "node:crypto";
 
 export const CSRF_COOKIE = "invoiceflow-csrf";
 const CSRF_FIELD = "csrfToken";
 
-function safeCompare(a: string, b: string) {
-  return a.length === b.length && a === b;
+export function safeCompare(a: string, b: string) {
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
 }
 
 export async function getCsrfToken() {

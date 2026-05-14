@@ -85,7 +85,7 @@ export function RegisterForm({ csrfToken }: { csrfToken: string }) {
           {state.message}
         </p>
       ) : null}
-      <Button type="submit" disabled={isPending} className="w-full">
+      <Button type="submit" variant="success" disabled={isPending} className="w-full">
         {isPending ? "Creating..." : "Create Account"}
       </Button>
       <Link href="/login" className="block text-sm text-primary hover:underline">

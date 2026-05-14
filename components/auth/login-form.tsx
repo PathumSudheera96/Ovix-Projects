@@ -109,7 +109,7 @@ export function LoginForm({
           {state.message}
         </p>
       ) : null}
-      <Button type="submit" disabled={isPending} className="w-full">
+      <Button type="submit" variant="success" disabled={isPending} className="w-full">
         {isPending ? "Signing In..." : "Sign In"}
       </Button>
       <div className="flex items-center justify-between text-sm">

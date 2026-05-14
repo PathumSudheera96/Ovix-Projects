@@ -134,9 +134,9 @@ export function AppShell({
                 <Bell className="size-4" />
               </Button>
               <form action={logoutAction}>
-                <Button type="submit" variant="outline">
-                  Logout
-                </Button>
+              <Button type="submit" variant="danger">
+                Logout
+              </Button>
               </form>
             </div>
           </div>

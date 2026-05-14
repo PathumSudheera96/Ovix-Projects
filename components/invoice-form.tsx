@@ -94,6 +94,8 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
   );
   const [items, setItems] = useState<InvoiceItem[]>(defaultItems);
   const [taxRate, setTaxRate] = useState(8);
+  const [discountType, setDiscountType] = useState<"none" | "percent" | "fixed">("none");
+  const [discountValue, setDiscountValue] = useState(0);
   const [invoiceNo] = useState(() => createDefaultInvoiceNumber());
   const [currency, setCurrency] = useState("USD");
   const [logoUrl, setLogoUrl] = useState("");
@@ -110,14 +112,22 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
       (sum, item) => sum + item.quantity * item.rate,
       0
     );
-    const tax = subtotal * (taxRate / 100);
+    const discount =
+      discountType === "percent"
+        ? subtotal * (Math.min(100, discountValue) / 100)
+        : discountType === "fixed"
+          ? discountValue
+          : 0;
+    const discountedSubtotal = Math.max(0, subtotal - discount);
+    const tax = discountedSubtotal * (taxRate / 100);
 
     return {
-      subtotal,
+      subtotal: discountedSubtotal,
+      discount: Math.min(subtotal, discount),
       tax,
-      total: subtotal + tax,
+      total: discountedSubtotal + tax,
     };
-  }, [items, taxRate]);
+  }, [discountType, discountValue, items, taxRate]);
 
   function updateItem(
     id: string,
@@ -173,6 +183,8 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
     <form action={formAction} className="rounded-lg border bg-card shadow-sm">
       <input type="hidden" name="csrfToken" value={csrfToken} />
       <input type="hidden" name="currency" value={currency} />
+      <input type="hidden" name="discountType" value={discountType} />
+      <input type="hidden" name="discountValue" value={discountValue} />
       <div className="border-b p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-3">
@@ -350,7 +362,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-sm font-semibold">Invoice items</h3>
-              <Button type="button" variant="outline" size="sm" onClick={addItem}>
+              <Button type="button" variant="secondary" size="sm" onClick={addItem}>
                 <Plus className="size-4" />
                 Add item
               </Button>
@@ -449,7 +461,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                     </div>
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="danger"
                       size="icon"
                       aria-label={`Remove item ${index + 1}`}
                       disabled={items.length === 1}
@@ -501,6 +513,44 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 <span className="text-xs text-muted-foreground">%</span>
               </div>
             </div>
+            <div className="grid grid-cols-[1fr_112px] items-center gap-2">
+              <label className="text-muted-foreground" htmlFor="discount-value">
+                Discount
+              </label>
+              <select
+                id="discount-type"
+                className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                value={discountType}
+                onChange={(event) =>
+                  setDiscountType(event.target.value as "none" | "percent" | "fixed")
+                }
+              >
+                <option value="none">None</option>
+                <option value="percent">%</option>
+                <option value="fixed">Fixed</option>
+              </select>
+              <div />
+              <div className="flex w-full items-center rounded-md border bg-background pr-2">
+                <Input
+                  id="discount-value"
+                  className="h-8 border-0 text-right shadow-none focus-visible:ring-0"
+                  inputMode="decimal"
+                  min="0"
+                  step="0.01"
+                  type="number"
+                  value={discountValue}
+                  onChange={(event) => setDiscountValue(normalizeNumber(event.target.value))}
+                  disabled={discountType === "none"}
+                />
+                <span className="text-xs text-muted-foreground">
+                  {discountType === "percent" ? "%" : discountType === "fixed" ? currency : ""}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-muted-foreground">Discount</span>
+              <span className="font-medium">-{formatCurrency(totals.discount, currency)}</span>
+            </div>
             <div className="flex items-center justify-between gap-3">
               <span className="text-muted-foreground">Tax</span>
               <span className="font-medium">{formatCurrency(totals.tax, currency)}</span>
@@ -515,10 +565,10 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
             </div>
           </div>
           <div className="mt-5 grid gap-2">
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" variant="success" disabled={isPending}>
               {isPending ? "Saving..." : "Save invoice"}
             </Button>
-            <Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>
+            <Button type="button" variant="info" onClick={() => setPreviewOpen(true)}>
               Preview invoice
             </Button>
           </div>

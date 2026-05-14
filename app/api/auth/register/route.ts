@@ -2,12 +2,8 @@ import { NextResponse } from "next/server";
 
 import { hashPassword } from "@/lib/auth/password";
 import { registerSchema } from "@/lib/auth/validation";
-import { csrfFieldName } from "@/lib/auth/csrf";
+import { csrfFieldName, safeCompare } from "@/lib/auth/csrf";
 import { prisma } from "@/lib/prisma";
-
-function safeCompare(a: string, b: string) {
-  return a.length === b.length && a === b;
-}
 
 export async function POST(request: Request) {
   try {

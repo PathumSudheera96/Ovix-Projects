@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import { InvoiceStatusSelect } from "@/components/invoice-status-select";
 import { QueryFilterForm } from "@/components/query-filter-form";
 import { requireSession } from "@/lib/auth/session";
@@ -138,12 +139,9 @@ export default async function InvoicesPage({
           <option value="total_desc">Amount high-low</option>
           <option value="total_asc">Amount low-high</option>
         </select>
-        <button
-          type="submit"
-          className="h-10 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
-        >
+        <Button type="submit" variant="info">
           Apply
-        </button>
+        </Button>
       </QueryFilterForm>
 
       <section className="grid gap-4 sm:grid-cols-3">
@@ -208,20 +206,14 @@ export default async function InvoicesPage({
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="inline-flex items-center gap-3">
-                        <a
-                          href={`/api/invoices/${invoice.id}/export`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm font-medium text-primary hover:underline"
-                        >
-                          Export
-                        </a>
-                        <Link
-                          href={`/invoices/${invoice.id}/edit`}
-                          className="text-sm font-medium text-primary hover:underline"
-                        >
-                          Edit
-                        </Link>
+                        <Button asChild type="button" size="sm" variant="info">
+                          <a href={`/api/invoices/${invoice.id}/export`} target="_blank" rel="noreferrer">
+                            Export
+                          </a>
+                        </Button>
+                        <Button asChild type="button" size="sm" variant="warning">
+                          <Link href={`/invoices/${invoice.id}/edit`}>Edit</Link>
+                        </Button>
                       </div>
                     </td>
                   </tr>

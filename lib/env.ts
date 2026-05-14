@@ -3,11 +3,10 @@ import { z } from "zod";
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   DATABASE_URL: z.string().url(),
-  AUTH_SECRET: z
-    .string()
-    .min(32)
-    .default("dev-only-secret-change-before-production-1234"),
+  AUTH_SECRET: z.string().min(32),
   APP_URL: z.string().url().default("http://localhost:3000"),
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().int().positive().optional(),
   SMTP_USER: z.string().optional(),
