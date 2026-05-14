@@ -49,7 +49,9 @@ export async function GET(
     notes: invoice.notes,
   });
 
-  return new NextResponse(bytes, {
+  const pdfBuffer = Buffer.from(bytes);
+
+  return new NextResponse(pdfBuffer, {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
