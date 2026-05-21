@@ -30,6 +30,7 @@ export async function GET(
 
   const baseUrl = new URL(request.url).origin;
   const pdfInput = {
+    currency: invoice.currency,
     title: invoice.title,
     companyName: invoice.companyName,
     companyEmail: invoice.companyEmail,

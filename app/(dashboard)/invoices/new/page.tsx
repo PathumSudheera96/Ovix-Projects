@@ -29,6 +29,7 @@ export default async function NewInvoicePage({
 
     if (source) {
       initialData = {
+        currency: source.currency,
         title: source.title ?? "INVOICE",
         companyName: source.companyName ?? "Your Company",
         companyEmail: source.companyEmail ?? "",

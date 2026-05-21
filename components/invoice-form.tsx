@@ -27,6 +27,7 @@ type SavedCustomer = {
 
 export type InvoiceFormInitialData = {
   invoiceNo?: string;
+  currency?: string;
   title?: string;
   companyName?: string;
   companyEmail?: string;
@@ -153,7 +154,7 @@ export function InvoiceForm({
   );
   const [discountValue, setDiscountValue] = useState(initialData?.discountValue ?? 0);
   const [invoiceNo] = useState(() => initialData?.invoiceNo || createDefaultInvoiceNumber());
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState(initialData?.currency ?? "USD");
   const [logoUrl, setLogoUrl] = useState(initialData?.companyLogoUrl ?? "");
   const [logoLoadFailed, setLogoLoadFailed] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);

@@ -27,6 +27,7 @@ const currencyOptions =
 type EditInvoiceData = {
   id: string;
   invoiceNo: string;
+  currency: string;
   title: string;
   companyName: string;
   companyEmail: string;
@@ -82,7 +83,7 @@ export function InvoiceEditForm({
   );
   const [items, setItems] = useState<InvoiceItem[]>(invoice.items);
   const [taxRate, setTaxRate] = useState(invoice.taxRate);
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState(invoice.currency || "USD");
   const [logoUrl, setLogoUrl] = useState(invoice.companyLogoUrl);
   const [companyName, setCompanyName] = useState(invoice.companyName);
   const [invoiceTitle, setInvoiceTitle] = useState(invoice.title);
@@ -149,7 +150,6 @@ export function InvoiceEditForm({
   return (
     <form action={formAction} className="rounded-lg border bg-card shadow-sm">
       <input type="hidden" name="csrfToken" value={csrfToken} />
-      <input type="hidden" name="currency" value={currency} />
       <input type="hidden" name="companyLogoUrl" value={logoUrl} />
       <div className="border-b p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -229,6 +229,7 @@ export function InvoiceEditForm({
               Currency
             </label>
             <select
+              name="currency"
               id="invoice-currency"
               className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={currency}

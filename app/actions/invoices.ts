@@ -60,6 +60,7 @@ function readInvoiceInput(formData: FormData): InvoiceInput {
 
   return {
     invoiceNo: readString(formData, "invoiceNo"),
+    currency: readString(formData, "currency"),
     title: readString(formData, "title"),
     companyName: readString(formData, "companyName"),
     companyEmail: readString(formData, "companyEmail"),
@@ -84,6 +85,7 @@ function readInvoiceInput(formData: FormData): InvoiceInput {
 
 const invoiceInputSchema = z.object({
   invoiceNo: z.string().trim().min(1).max(50),
+  currency: z.string().trim().length(3),
   title: z.string().trim().max(80),
   companyName: z.string().trim().max(120),
   companyEmail: z.string().trim().email().max(254).or(z.literal("")),
@@ -230,6 +232,7 @@ export async function updateInvoiceStatusAction(id: string, status: string) {
     id,
     {
       invoiceNo: invoice.invoiceNo,
+      currency: invoice.currency,
       title: invoice.title ?? "",
       companyName: invoice.companyName ?? "",
       companyEmail: invoice.companyEmail ?? "",

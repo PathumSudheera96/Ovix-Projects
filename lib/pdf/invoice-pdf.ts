@@ -3,6 +3,7 @@ import path from "node:path";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 
 type InvoicePdfInput = {
+  currency?: string | null;
   title?: string | null;
   companyName?: string | null;
   companyEmail?: string | null;
@@ -38,10 +39,10 @@ const PAGE = {
   marginBottom: 36,
 };
 
-function money(value: number) {
+function money(value: number, currency = "USD") {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency,
     maximumFractionDigits: 2,
   }).format(value);
 }
@@ -107,6 +108,7 @@ export async function buildInvoicePdf(input: InvoicePdfInput) {
   const { regular, bold } = await getFonts(pdfDoc);
   const pages: PDFPage[] = [];
   const contentWidth = PAGE.width - PAGE.marginX * 2;
+  const currency = (input.currency ?? "USD").trim().toUpperCase();
   const addPage = () => {
     const page = pdfDoc.addPage([PAGE.width, PAGE.height]);
     pages.push(page);
@@ -192,7 +194,7 @@ export async function buildInvoicePdf(input: InvoicePdfInput) {
         input.companyPhone?.trim() || input.companyAddress?.trim() || "-",
       ],
       [input.customer.name, input.customer.email ?? "-", input.customer.phone ?? "-"],
-      [`Invoice Date: ${fmtDate(input.createdAt)}`, `Due Date: ${fmtDate(input.dueDate)}`, "Currency: USD"],
+      [`Invoice Date: ${fmtDate(input.createdAt)}`, `Due Date: ${fmtDate(input.dueDate)}`, `Currency: ${currency}`],
     ];
 
     for (let i = 0; i < 3; i += 1) {
@@ -290,8 +292,8 @@ export async function buildInvoicePdf(input: InvoicePdfInput) {
       });
     });
     page.drawText(String(item.quantity), { x: col.qty + 2, y: y - 10, size: 10, font: regular, color: rgb(0.16, 0.16, 0.18) });
-    drawRightText(page, money(item.price), col.total - 14, y - 10, 10, regular, rgb(0.16, 0.16, 0.18));
-    drawRightText(page, money(item.total), PAGE.width - PAGE.marginX - 12, y - 10, 10, bold, rgb(0.12, 0.12, 0.14));
+    drawRightText(page, money(item.price, currency), col.total - 14, y - 10, 10, regular, rgb(0.16, 0.16, 0.18));
+    drawRightText(page, money(item.total, currency), PAGE.width - PAGE.marginX - 12, y - 10, 10, bold, rgb(0.12, 0.12, 0.14));
     y -= rowHeight + 4;
   });
 
@@ -337,9 +339,9 @@ export async function buildInvoicePdf(input: InvoicePdfInput) {
   });
   page.drawText("Invoice Summary", { x: summaryX + 14, y: summaryY + 100, size: 11, font: bold, color: rgb(1, 1, 1) });
   page.drawText("Subtotal", { x: summaryX + 14, y: summaryY + 74, size: 10, font: regular, color: rgb(0.86, 0.86, 0.88) });
-  drawRightText(page, money(input.subtotal), summaryX + 198, summaryY + 74, 10, bold, rgb(1, 1, 1));
+  drawRightText(page, money(input.subtotal, currency), summaryX + 198, summaryY + 74, 10, bold, rgb(1, 1, 1));
   page.drawText("Tax", { x: summaryX + 14, y: summaryY + 56, size: 10, font: regular, color: rgb(0.86, 0.86, 0.88) });
-  drawRightText(page, money(input.tax), summaryX + 198, summaryY + 56, 10, bold, rgb(1, 1, 1));
+  drawRightText(page, money(input.tax, currency), summaryX + 198, summaryY + 56, 10, bold, rgb(1, 1, 1));
   page.drawLine({
     start: { x: summaryX + 14, y: summaryY + 44 },
     end: { x: summaryX + 198, y: summaryY + 44 },
@@ -347,7 +349,7 @@ export async function buildInvoicePdf(input: InvoicePdfInput) {
     color: rgb(0.35, 0.35, 0.38),
   });
   page.drawText("Total", { x: summaryX + 14, y: summaryY + 24, size: 12, font: bold, color: rgb(1, 1, 1) });
-  drawRightText(page, money(input.total), summaryX + 198, summaryY + 24, 12, bold, rgb(1, 1, 1));
+  drawRightText(page, money(input.total, currency), summaryX + 198, summaryY + 24, 12, bold, rgb(1, 1, 1));
 
   pages.forEach((page, index) => {
     drawPageFooter(page, index);

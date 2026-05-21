@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 
+import { convertManyToCurrency } from "@/lib/fx-rates";
 import { prisma } from "@/lib/prisma";
 
 export type InvoiceItemInput = {
@@ -10,6 +11,7 @@ export type InvoiceItemInput = {
 
 export type InvoiceInput = {
   invoiceNo: string;
+  currency?: string;
   title?: string;
   companyName?: string;
   companyEmail?: string;
@@ -49,11 +51,6 @@ export type DashboardData = {
   invoices: DashboardInvoice[];
 };
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
-
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
@@ -63,6 +60,11 @@ function cleanOptional(value?: string) {
   const cleanValue = value?.trim();
 
   return cleanValue ? cleanValue : null;
+}
+
+function normalizeCurrency(value?: string) {
+  const code = (value ?? "").trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(code) ? code : "USD";
 }
 
 function normalizeItems(items: InvoiceItemInput[]) {
@@ -176,6 +178,7 @@ export async function createInvoice(input: InvoiceInput, userId: string) {
     return await prisma.invoice.create({
       data: {
         invoiceNo: input.invoiceNo.trim(),
+        currency: normalizeCurrency(input.currency),
         title: cleanOptional(input.title),
         companyName: cleanOptional(input.companyName),
         companyEmail: cleanOptional(input.companyEmail),
@@ -248,6 +251,7 @@ export async function updateInvoice(
         where: { id },
         data: {
           invoiceNo: input.invoiceNo.trim(),
+          currency: normalizeCurrency(input.currency),
           title: cleanOptional(input.title),
           companyName: cleanOptional(input.companyName),
           companyEmail: cleanOptional(input.companyEmail),
@@ -314,23 +318,33 @@ export async function getDashboardData(userId: string, isAdmin = false): Promise
     include: { customer: true },
   });
 
-  const [paidRevenue, outstanding, paidInvoices, drafts] = await Promise.all([
-    prisma.invoice.aggregate({
+  const [paidRevenueRows, outstandingRows, paidInvoices, drafts] = await Promise.all([
+    prisma.invoice.findMany({
       where: { ...scope, status: "paid" },
-      _sum: { total: true },
+      select: { total: true, currency: true },
     }),
-    prisma.invoice.aggregate({
+    prisma.invoice.findMany({
       where: { ...scope, status: { in: ["sent", "overdue"] } },
-      _sum: { total: true },
+      select: { total: true, currency: true },
     }),
     prisma.invoice.count({ where: { ...scope, status: "paid" } }),
     prisma.invoice.count({ where: { ...scope, status: "draft" } }),
   ]);
+  const [revenueUsd, outstandingUsd] = await Promise.all([
+    convertManyToCurrency(
+      paidRevenueRows.map((row) => ({ amount: row.total, currency: row.currency })),
+      "USD"
+    ),
+    convertManyToCurrency(
+      outstandingRows.map((row) => ({ amount: row.total, currency: row.currency })),
+      "USD"
+    ),
+  ]);
 
   return {
     stats: {
-      revenue: paidRevenue._sum.total ?? 0,
-      outstanding: outstanding._sum.total ?? 0,
+      revenue: revenueUsd,
+      outstanding: outstandingUsd,
       paidInvoices,
       drafts,
     },
@@ -339,7 +353,10 @@ export async function getDashboardData(userId: string, isAdmin = false): Promise
       invoiceNo: invoice.invoiceNo,
       customer: invoice.customer.name,
       date: dateFormatter.format(invoice.createdAt),
-      amount: currencyFormatter.format(invoice.total),
+      amount: new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: normalizeCurrency(invoice.currency),
+      }).format(invoice.total),
       status: invoice.status,
     })),
   };

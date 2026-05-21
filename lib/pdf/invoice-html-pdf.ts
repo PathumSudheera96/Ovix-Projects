@@ -2,6 +2,7 @@ import { chromium } from "playwright";
 import { access } from "node:fs/promises";
 
 type InvoicePdfInput = {
+  currency?: string | null;
   title?: string | null;
   companyName?: string | null;
   companyEmail?: string | null;
@@ -38,10 +39,10 @@ function esc(value: string) {
     .replaceAll("'", "&#39;");
 }
 
-function money(value: number) {
+function money(value: number, currency = "USD") {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency,
     maximumFractionDigits: 2,
   }).format(value);
 }
@@ -57,6 +58,7 @@ function fmtDate(value: Date | null) {
 
 function renderInvoiceHtml(input: InvoicePdfInput) {
   const title = esc((input.title?.trim() || "INVOICE").toUpperCase());
+  const currency = (input.currency ?? "USD").trim().toUpperCase();
   const companyName = esc(input.companyName?.trim() || "Your Company");
   const companyEmail = esc(input.companyEmail?.trim() || "company@example.com");
   const companyPhone = esc(input.companyPhone?.trim() || "");
@@ -75,8 +77,8 @@ function renderInvoiceHtml(input: InvoicePdfInput) {
             <div class="item-title">${esc(item.description || "Untitled item")}</div>
           </td>
           <td>${item.quantity}</td>
-          <td>${esc(money(item.price))}</td>
-          <td>${esc(money(item.total))}</td>
+          <td>${esc(money(item.price, currency))}</td>
+          <td>${esc(money(item.total, currency))}</td>
         </tr>
       `;
     })
@@ -172,7 +174,7 @@ function renderInvoiceHtml(input: InvoicePdfInput) {
             <div class="ibox">
               <div class="label">Invoice Meta</div>
               <h3>${esc(fmtDate(input.createdAt))}</h3>
-              <p>Due: ${esc(fmtDate(input.dueDate))}<br/>Currency: USD</p>
+              <p>Due: ${esc(fmtDate(input.dueDate))}<br/>Currency: ${esc(currency)}</p>
             </div>
           </div>
 
@@ -190,9 +192,9 @@ function renderInvoiceHtml(input: InvoicePdfInput) {
             </div>
             <div class="sum">
               <h3>Invoice Summary</h3>
-              <div class="row"><span>Subtotal</span><strong>${esc(money(input.subtotal))}</strong></div>
-              <div class="row"><span>Tax</span><strong>${esc(money(input.tax))}</strong></div>
-              <div class="row total"><span>Total</span><span>${esc(money(input.total))}</span></div>
+              <div class="row"><span>Subtotal</span><strong>${esc(money(input.subtotal, currency))}</strong></div>
+              <div class="row"><span>Tax</span><strong>${esc(money(input.tax, currency))}</strong></div>
+              <div class="row total"><span>Total</span><span>${esc(money(input.total, currency))}</span></div>
             </div>
           </div>
           <div class="foot">This invoice was generated digitally and is valid without signature.</div>
