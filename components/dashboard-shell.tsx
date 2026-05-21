@@ -149,6 +149,9 @@ export function DashboardShell({ data }: { data: DashboardData }) {
                           <Button asChild type="button" variant="warning" size="sm">
                             <Link href={`/invoices/${invoice.id}/edit`}>Edit</Link>
                           </Button>
+                          <Button asChild type="button" variant="secondary" size="sm">
+                            <Link href={`/invoices/new?duplicateFrom=${invoice.id}`}>Duplicate</Link>
+                          </Button>
                           <DeleteInvoiceButton invoice={invoice} />
                         </div>
                       </td>

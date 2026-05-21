@@ -18,6 +18,8 @@ import {
 export type InvoiceActionState = {
   ok: boolean;
   message: string;
+  invoiceId?: string;
+  invoiceNo?: string;
 };
 
 function readString(formData: FormData, key: string) {
@@ -58,6 +60,12 @@ function readInvoiceInput(formData: FormData): InvoiceInput {
 
   return {
     invoiceNo: readString(formData, "invoiceNo"),
+    title: readString(formData, "title"),
+    companyName: readString(formData, "companyName"),
+    companyEmail: readString(formData, "companyEmail"),
+    companyPhone: readString(formData, "companyPhone"),
+    companyAddress: readString(formData, "companyAddress"),
+    companyLogoUrl: readString(formData, "companyLogoUrl"),
     customerName: readString(formData, "customerName"),
     customerEmail: readString(formData, "customerEmail"),
     customerPhone: readString(formData, "customerPhone"),
@@ -76,6 +84,12 @@ function readInvoiceInput(formData: FormData): InvoiceInput {
 
 const invoiceInputSchema = z.object({
   invoiceNo: z.string().trim().min(1).max(50),
+  title: z.string().trim().max(80),
+  companyName: z.string().trim().max(120),
+  companyEmail: z.string().trim().email().max(254).or(z.literal("")),
+  companyPhone: z.string().trim().max(30).or(z.literal("")),
+  companyAddress: z.string().trim().max(240).or(z.literal("")),
+  companyLogoUrl: z.string().trim().max(2048).or(z.literal("")),
   customerName: z.string().trim().min(2).max(120),
   customerEmail: z.string().trim().email().max(254).or(z.literal("")),
   customerPhone: z.string().trim().max(30).or(z.literal("")),
@@ -154,6 +168,8 @@ export async function createInvoiceAction(
     return {
       ok: true,
       message: `Invoice ${invoice.invoiceNo} saved.`,
+      invoiceId: invoice.id,
+      invoiceNo: invoice.invoiceNo,
     };
   } catch (error) {
     return {
@@ -186,6 +202,8 @@ export async function updateInvoiceAction(
     return {
       ok: true,
       message: `Invoice ${invoice.invoiceNo} updated.`,
+      invoiceId: invoice.id,
+      invoiceNo: invoice.invoiceNo,
     };
   } catch (error) {
     return {
@@ -212,6 +230,12 @@ export async function updateInvoiceStatusAction(id: string, status: string) {
     id,
     {
       invoiceNo: invoice.invoiceNo,
+      title: invoice.title ?? "",
+      companyName: invoice.companyName ?? "",
+      companyEmail: invoice.companyEmail ?? "",
+      companyPhone: invoice.companyPhone ?? "",
+      companyAddress: invoice.companyAddress ?? "",
+      companyLogoUrl: invoice.companyLogoUrl ?? "",
       customerName: invoice.customer.name,
       customerEmail: invoice.customer.email ?? "",
       customerPhone: invoice.customer.phone ?? "",

@@ -214,6 +214,9 @@ export default async function InvoicesPage({
                         <Button asChild type="button" size="sm" variant="warning">
                           <Link href={`/invoices/${invoice.id}/edit`}>Edit</Link>
                         </Button>
+                        <Button asChild type="button" size="sm" variant="secondary">
+                          <Link href={`/invoices/new?duplicateFrom=${invoice.id}`}>Duplicate</Link>
+                        </Button>
                       </div>
                     </td>
                   </tr>

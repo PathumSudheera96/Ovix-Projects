@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
+import { buildInvoicePdfFromHtml, resolveLogoUrl } from "@/lib/pdf/invoice-html-pdf";
 import { prisma } from "@/lib/prisma";
 import { buildInvoicePdf } from "@/lib/pdf/invoice-pdf";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
@@ -27,7 +28,14 @@ export async function GET(
     return NextResponse.json({ ok: false, message: "Invoice not found" }, { status: 404 });
   }
 
-  const bytes = await buildInvoicePdf({
+  const baseUrl = new URL(request.url).origin;
+  const pdfInput = {
+    title: invoice.title,
+    companyName: invoice.companyName,
+    companyEmail: invoice.companyEmail,
+    companyPhone: invoice.companyPhone,
+    companyAddress: invoice.companyAddress,
+    companyLogoUrl: resolveLogoUrl(invoice.companyLogoUrl, baseUrl),
     invoiceNo: invoice.invoiceNo,
     createdAt: invoice.createdAt,
     dueDate: invoice.dueDate,
@@ -47,6 +55,13 @@ export async function GET(
     tax: invoice.tax,
     total: invoice.total,
     notes: invoice.notes,
+  };
+
+  let renderer = "html";
+  const bytes = await buildInvoicePdfFromHtml(pdfInput).catch(async (error) => {
+    renderer = "pdf-lib-fallback";
+    console.error("PDF_HTML_RENDER_FAILED", error);
+    return buildInvoicePdf(pdfInput);
   });
 
   const pdfBuffer = Buffer.from(bytes);
@@ -57,6 +72,7 @@ export async function GET(
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="invoice-${invoice.invoiceNo}.pdf"`,
       "Cache-Control": "private, no-store",
+      "X-Invoice-Pdf-Renderer": renderer,
     },
   });
 }

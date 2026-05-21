@@ -91,6 +91,12 @@ model Customer {
 model Invoice {
   id          String        @id @default(cuid())
   invoiceNo   String        @unique
+  title       String?
+  companyName String?
+  companyEmail String?
+  companyPhone String?
+  companyAddress String?
+  companyLogoUrl String?
   subtotal    Float
   tax         Float
   total       Float

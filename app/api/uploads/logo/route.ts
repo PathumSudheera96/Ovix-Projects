@@ -8,7 +8,7 @@ import { auth } from "@/auth";
 
 export const runtime = "nodejs";
 
-const MAX_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_SIZE_BYTES = 4 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/svg+xml"]);
 
 function extensionFor(type: string) {
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
   }
 
   if (file.size > MAX_SIZE_BYTES) {
-    return NextResponse.json({ ok: false, message: "Image must be 5MB or less." }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "Image must be 4MB or less." }, { status: 400 });
   }
 
   const uploadDir = path.join(process.cwd(), "public", "uploads", "logos");

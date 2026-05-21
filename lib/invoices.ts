@@ -10,6 +10,12 @@ export type InvoiceItemInput = {
 
 export type InvoiceInput = {
   invoiceNo: string;
+  title?: string;
+  companyName?: string;
+  companyEmail?: string;
+  companyPhone?: string;
+  companyAddress?: string;
+  companyLogoUrl?: string;
   customerName: string;
   customerEmail?: string;
   customerPhone?: string;
@@ -170,6 +176,12 @@ export async function createInvoice(input: InvoiceInput, userId: string) {
     return await prisma.invoice.create({
       data: {
         invoiceNo: input.invoiceNo.trim(),
+        title: cleanOptional(input.title),
+        companyName: cleanOptional(input.companyName),
+        companyEmail: cleanOptional(input.companyEmail),
+        companyPhone: cleanOptional(input.companyPhone),
+        companyAddress: cleanOptional(input.companyAddress),
+        companyLogoUrl: cleanOptional(input.companyLogoUrl),
         subtotal: totals.subtotal,
         tax: totals.tax,
         total: totals.total,
@@ -236,6 +248,12 @@ export async function updateInvoice(
         where: { id },
         data: {
           invoiceNo: input.invoiceNo.trim(),
+          title: cleanOptional(input.title),
+          companyName: cleanOptional(input.companyName),
+          companyEmail: cleanOptional(input.companyEmail),
+          companyPhone: cleanOptional(input.companyPhone),
+          companyAddress: cleanOptional(input.companyAddress),
+          companyLogoUrl: cleanOptional(input.companyLogoUrl),
           subtotal: totals.subtotal,
           tax: totals.tax,
           total: totals.total,
