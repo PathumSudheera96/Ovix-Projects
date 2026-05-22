@@ -1,6 +1,12 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import {
+  PDFDocument,
+  StandardFonts,
+  rgb,
+  type PDFFont,
+  type PDFPage,
+} from "pdf-lib";
 
 type InvoicePdfInput = {
   currency?: string | null;
@@ -103,9 +109,43 @@ async function getFonts(pdfDoc: PDFDocument) {
   }
 }
 
+async function loadLogoImage(pdfDoc: PDFDocument, logoUrl?: string | null) {
+  const url = (logoUrl ?? "").trim();
+  if (!url) return null;
+
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) return null;
+
+    const contentType = response.headers.get("content-type") ?? "";
+    const bytes = new Uint8Array(await response.arrayBuffer());
+
+    if (contentType.includes("png")) {
+      return await pdfDoc.embedPng(bytes);
+    }
+
+    if (contentType.includes("jpeg") || contentType.includes("jpg")) {
+      return await pdfDoc.embedJpg(bytes);
+    }
+
+    if (url.endsWith(".png")) {
+      return await pdfDoc.embedPng(bytes);
+    }
+
+    if (url.endsWith(".jpg") || url.endsWith(".jpeg")) {
+      return await pdfDoc.embedJpg(bytes);
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function buildInvoicePdf(input: InvoicePdfInput) {
   const pdfDoc = await PDFDocument.create();
   const { regular, bold } = await getFonts(pdfDoc);
+  const embeddedLogo = await loadLogoImage(pdfDoc, input.companyLogoUrl);
   const pages: PDFPage[] = [];
   const contentWidth = PAGE.width - PAGE.marginX * 2;
   const currency = (input.currency ?? "USD").trim().toUpperCase();
@@ -137,20 +177,29 @@ export async function buildInvoicePdf(input: InvoicePdfInput) {
       color: rgb(0.09, 0.09, 0.1),
     });
 
-    page.drawRectangle({
-      x: PAGE.marginX + 20,
-      y: headerY + 92,
-      width: 42,
-      height: 42,
-      color: rgb(0.2, 0.2, 0.22),
-    });
-    page.drawText("I", {
-      x: PAGE.marginX + 35,
-      y: headerY + 104,
-      size: 18,
-      font: bold,
-      color: rgb(1, 1, 1),
-    });
+    if (embeddedLogo) {
+      page.drawImage(embeddedLogo, {
+        x: PAGE.marginX + 20,
+        y: headerY + 92,
+        width: 42,
+        height: 42,
+      });
+    } else {
+      page.drawRectangle({
+        x: PAGE.marginX + 20,
+        y: headerY + 92,
+        width: 42,
+        height: 42,
+        color: rgb(0.2, 0.2, 0.22),
+      });
+      page.drawText("I", {
+        x: PAGE.marginX + 35,
+        y: headerY + 104,
+        size: 18,
+        font: bold,
+        color: rgb(1, 1, 1),
+      });
+    }
 
     page.drawText(input.companyName?.trim() || "InvoiceFlow", {
       x: PAGE.marginX + 74,

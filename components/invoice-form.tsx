@@ -1,7 +1,8 @@
 "use client";
 
 import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   createInvoiceAction,
@@ -143,6 +144,7 @@ export function InvoiceForm({
   csrfToken: string;
   initialData?: InvoiceFormInitialData;
 }) {
+  const router = useRouter();
   const [actionState, formAction, isPending] = useActionState(
     createInvoiceAction,
     initialActionState
@@ -155,7 +157,8 @@ export function InvoiceForm({
   const [discountValue, setDiscountValue] = useState(initialData?.discountValue ?? 0);
   const [invoiceNo] = useState(() => initialData?.invoiceNo || createDefaultInvoiceNumber());
   const [currency, setCurrency] = useState(initialData?.currency ?? "USD");
-  const [logoUrl, setLogoUrl] = useState(initialData?.companyLogoUrl ?? "");
+  const [logoStoredUrl, setLogoStoredUrl] = useState(initialData?.companyLogoUrl ?? "");
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState(initialData?.companyLogoUrl ?? "");
   const [logoLoadFailed, setLogoLoadFailed] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [companyName, setCompanyName] = useState(initialData?.companyName ?? "Your Company");
@@ -169,6 +172,7 @@ export function InvoiceForm({
   const [customerEmail, setCustomerEmail] = useState(initialData?.customerEmail ?? "");
   const [customerPhone, setCustomerPhone] = useState(initialData?.customerPhone ?? "");
   const [savedCustomers, setSavedCustomers] = useState<SavedCustomer[]>([]);
+  const objectPreviewUrlRef = useRef<string | null>(null);
 
   const totals = useMemo(() => {
     const subtotal = items.reduce(
@@ -221,9 +225,22 @@ export function InvoiceForm({
   async function onLogoFileChange(file: File | undefined) {
     if (!file) return;
     setLogoUploadMessage("");
+    if (objectPreviewUrlRef.current) {
+      URL.revokeObjectURL(objectPreviewUrlRef.current);
+      objectPreviewUrlRef.current = null;
+    }
+
+    const localPreviewUrl = URL.createObjectURL(file);
+    objectPreviewUrlRef.current = localPreviewUrl;
+    setLogoLoadFailed(false);
+    setLogoPreviewUrl(localPreviewUrl);
 
     if (file.size > MAX_LOGO_SIZE_BYTES) {
       setLogoUploadMessage("Logo must be 4MB or less.");
+      setLogoPreviewUrl(logoStoredUrl);
+      setLogoLoadFailed(false);
+      URL.revokeObjectURL(localPreviewUrl);
+      objectPreviewUrlRef.current = null;
       return;
     }
 
@@ -241,10 +258,21 @@ export function InvoiceForm({
         throw new Error(result.message ?? "Upload failed.");
       }
       setLogoLoadFailed(false);
-      setLogoUrl(`${result.url}?v=${Date.now()}`);
+      setLogoStoredUrl(result.url);
+      setLogoPreviewUrl(`${result.url}?v=${Date.now()}`);
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+        objectPreviewUrlRef.current = null;
+      }
       setLogoUploadMessage("Logo uploaded.");
     } catch {
       setLogoUploadMessage("Logo upload failed. Please try again.");
+      setLogoPreviewUrl(logoStoredUrl);
+      setLogoLoadFailed(false);
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+        objectPreviewUrlRef.current = null;
+      }
     } finally {
       setLogoUploading(false);
     }
@@ -272,6 +300,20 @@ export function InvoiceForm({
     };
   }, []);
 
+  useEffect(() => {
+    if (actionState.ok) {
+      router.refresh();
+    }
+  }, [actionState.ok, router]);
+
+  useEffect(() => {
+    return () => {
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+      }
+    };
+  }, []);
+
   function applySavedCustomer(nextName: string) {
     const match = savedCustomers.find(
       (customer) => customer.name.toLowerCase() === nextName.trim().toLowerCase()
@@ -287,7 +329,7 @@ export function InvoiceForm({
       <input type="hidden" name="currency" value={currency} />
       <input type="hidden" name="discountType" value={discountType} />
       <input type="hidden" name="discountValue" value={discountValue} />
-      <input type="hidden" name="companyLogoUrl" value={logoUrl} />
+      <input type="hidden" name="companyLogoUrl" value={logoStoredUrl} />
       <div className="border-b p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-3">
@@ -300,11 +342,11 @@ export function InvoiceForm({
                   htmlFor="company-logo-file"
                   className="relative flex size-[96px] cursor-pointer items-center justify-center overflow-hidden rounded-md border bg-muted hover:bg-muted/80"
                 >
-                  {logoUrl && !logoLoadFailed ? (
+                  {logoPreviewUrl && !logoLoadFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      key={logoUrl}
-                      src={logoUrl}
+                      key={logoPreviewUrl}
+                      src={logoPreviewUrl}
                       alt="Company logo"
                       className="size-full object-cover"
                       onError={() => setLogoLoadFailed(true)}
@@ -318,7 +360,7 @@ export function InvoiceForm({
                 <Input
                   id="company-logo-file"
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  accept="image/png,image/jpeg"
                   className="hidden"
                   onChange={(event) => void onLogoFileChange(event.target.files?.[0])}
                 />
@@ -756,11 +798,11 @@ export function InvoiceForm({
             <div className="mb-8 grid gap-6 md:grid-cols-[1fr_auto]">
               <div className="flex items-start gap-3">
                 <div className="flex size-14 items-center justify-center overflow-hidden rounded-md border bg-muted">
-                  {logoUrl && !logoLoadFailed ? (
+                  {logoPreviewUrl && !logoLoadFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      key={`preview-${logoUrl}`}
-                      src={logoUrl}
+                      key={`preview-${logoPreviewUrl}`}
+                      src={logoPreviewUrl}
                       alt="Company logo"
                       className="size-full object-cover"
                       onError={() => setLogoLoadFailed(true)}

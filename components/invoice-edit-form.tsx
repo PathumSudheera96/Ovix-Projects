@@ -1,7 +1,8 @@
 "use client";
 
 import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   updateInvoiceAction,
@@ -77,6 +78,7 @@ export function InvoiceEditForm({
   csrfToken: string;
   invoice: EditInvoiceData;
 }) {
+  const router = useRouter();
   const [actionState, formAction, isPending] = useActionState(
     updateInvoiceAction.bind(null, invoice.id),
     initialActionState
@@ -84,7 +86,8 @@ export function InvoiceEditForm({
   const [items, setItems] = useState<InvoiceItem[]>(invoice.items);
   const [taxRate, setTaxRate] = useState(invoice.taxRate);
   const [currency, setCurrency] = useState(invoice.currency || "USD");
-  const [logoUrl, setLogoUrl] = useState(invoice.companyLogoUrl);
+  const [logoStoredUrl, setLogoStoredUrl] = useState(invoice.companyLogoUrl);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState(invoice.companyLogoUrl);
   const [companyName, setCompanyName] = useState(invoice.companyName);
   const [invoiceTitle, setInvoiceTitle] = useState(invoice.title);
   const [companyEmail, setCompanyEmail] = useState(invoice.companyEmail);
@@ -94,6 +97,7 @@ export function InvoiceEditForm({
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoLoadFailed, setLogoLoadFailed] = useState(false);
   const [logoUploadMessage, setLogoUploadMessage] = useState("");
+  const objectPreviewUrlRef = useRef<string | null>(null);
 
   const totals = useMemo(() => {
     const subtotal = items.reduce((sum, item) => sum + item.quantity * item.rate, 0);
@@ -119,8 +123,20 @@ export function InvoiceEditForm({
   async function onLogoFileChange(file: File | undefined) {
     if (!file) return;
     setLogoUploadMessage("");
+    if (objectPreviewUrlRef.current) {
+      URL.revokeObjectURL(objectPreviewUrlRef.current);
+      objectPreviewUrlRef.current = null;
+    }
+    const localPreviewUrl = URL.createObjectURL(file);
+    objectPreviewUrlRef.current = localPreviewUrl;
+    setLogoLoadFailed(false);
+    setLogoPreviewUrl(localPreviewUrl);
     if (file.size > MAX_LOGO_SIZE_BYTES) {
       setLogoUploadMessage("Logo must be 4MB or less.");
+      setLogoPreviewUrl(logoStoredUrl);
+      setLogoLoadFailed(false);
+      URL.revokeObjectURL(localPreviewUrl);
+      objectPreviewUrlRef.current = null;
       return;
     }
 
@@ -138,19 +154,44 @@ export function InvoiceEditForm({
         throw new Error(result.message ?? "Upload failed.");
       }
       setLogoLoadFailed(false);
-      setLogoUrl(`${result.url}?v=${Date.now()}`);
+      setLogoStoredUrl(result.url);
+      setLogoPreviewUrl(`${result.url}?v=${Date.now()}`);
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+        objectPreviewUrlRef.current = null;
+      }
       setLogoUploadMessage("Logo uploaded.");
     } catch {
       setLogoUploadMessage("Logo upload failed. Please try again.");
+      setLogoPreviewUrl(logoStoredUrl);
+      setLogoLoadFailed(false);
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+        objectPreviewUrlRef.current = null;
+      }
     } finally {
       setLogoUploading(false);
     }
   }
 
+  useEffect(() => {
+    if (actionState.ok) {
+      router.refresh();
+    }
+  }, [actionState.ok, router]);
+
+  useEffect(() => {
+    return () => {
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+      }
+    };
+  }, []);
+
   return (
     <form action={formAction} className="rounded-lg border bg-card shadow-sm">
       <input type="hidden" name="csrfToken" value={csrfToken} />
-      <input type="hidden" name="companyLogoUrl" value={logoUrl} />
+      <input type="hidden" name="companyLogoUrl" value={logoStoredUrl} />
       <div className="border-b p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-3">
@@ -161,11 +202,11 @@ export function InvoiceEditForm({
                   htmlFor="company-logo-file"
                   className="relative flex size-[96px] cursor-pointer items-center justify-center overflow-hidden rounded-md border bg-muted hover:bg-muted/80"
                 >
-                  {logoUrl && !logoLoadFailed ? (
+                  {logoPreviewUrl && !logoLoadFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      key={logoUrl}
-                      src={logoUrl}
+                      key={logoPreviewUrl}
+                      src={logoPreviewUrl}
                       alt="Company logo"
                       className="size-full object-cover"
                       onError={() => setLogoLoadFailed(true)}
@@ -179,7 +220,7 @@ export function InvoiceEditForm({
                 <Input
                   id="company-logo-file"
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  accept="image/png,image/jpeg"
                   className="hidden"
                   onChange={(event) => void onLogoFileChange(event.target.files?.[0])}
                 />
@@ -419,11 +460,11 @@ export function InvoiceEditForm({
             <div className="mb-8 grid gap-6 md:grid-cols-[1fr_auto]">
               <div className="flex items-start gap-3">
                 <div className="flex size-14 items-center justify-center overflow-hidden rounded-md border bg-muted">
-                  {logoUrl && !logoLoadFailed ? (
+                  {logoPreviewUrl && !logoLoadFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      key={`preview-${logoUrl}`}
-                      src={logoUrl}
+                      key={`preview-${logoPreviewUrl}`}
+                      src={logoPreviewUrl}
                       alt="Company logo"
                       className="size-full object-cover"
                       onError={() => setLogoLoadFailed(true)}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { InvoiceEmailSendButton } from "@/components/invoice-email-send-button";
 import { InvoiceStatusSelect } from "@/components/invoice-status-select";
 import { QueryFilterForm } from "@/components/query-filter-form";
 import { convertManyToCurrency, formatCurrency as formatFxCurrency } from "@/lib/fx-rates";
@@ -232,6 +233,20 @@ export default async function InvoicesPage({
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="inline-flex items-center gap-3">
+                        <Button asChild type="button" size="sm" variant="outline">
+                          <a
+                            href={`mailto:${encodeURIComponent(
+                              invoice.customer.email ?? ""
+                            )}?subject=${encodeURIComponent(
+                              `Invoice ${invoice.invoiceNo}`
+                            )}&body=${encodeURIComponent(
+                              `Hello ${invoice.customer.name},\n\nPlease find your invoice ${invoice.invoiceNo}.`
+                            )}`}
+                          >
+                            Email App
+                          </a>
+                        </Button>
+                        <InvoiceEmailSendButton invoiceId={invoice.id} />
                         <Button asChild type="button" size="sm" variant="info">
                           <a href={`/api/invoices/${invoice.id}/export`} target="_blank" rel="noreferrer">
                             Export

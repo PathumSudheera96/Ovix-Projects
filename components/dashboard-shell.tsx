@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { deleteInvoiceAction } from "@/app/actions/invoices";
+import { InvoiceEmailSendButton } from "@/components/invoice-email-send-button";
 import { InvoiceStatusSelect } from "@/components/invoice-status-select";
 import { Button } from "@/components/ui/button";
 import type { DashboardData, DashboardInvoice } from "@/lib/invoices";
@@ -141,6 +142,20 @@ export function DashboardShell({ data }: { data: DashboardData }) {
                       <td className="px-5 py-4 text-right font-medium">{invoice.amount}</td>
                       <td className="px-5 py-4 text-right">
                         <div className="inline-flex items-center gap-2">
+                          <Button asChild type="button" variant="outline" size="sm">
+                            <a
+                              href={`mailto:${encodeURIComponent(
+                                invoice.customerEmail ?? ""
+                              )}?subject=${encodeURIComponent(
+                                `Invoice ${invoice.invoiceNo}`
+                              )}&body=${encodeURIComponent(
+                                `Hello ${invoice.customer},\n\nPlease find your invoice ${invoice.invoiceNo}.`
+                              )}`}
+                            >
+                              Email App
+                            </a>
+                          </Button>
+                          <InvoiceEmailSendButton invoiceId={invoice.id} />
                           <Button asChild type="button" variant="info" size="sm">
                             <a href={`/api/invoices/${invoice.id}/export`} target="_blank" rel="noreferrer">
                               Export

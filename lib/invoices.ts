@@ -34,6 +34,7 @@ export type DashboardInvoice = {
   id: string;
   invoiceNo: string;
   customer: string;
+  customerEmail?: string | null;
   date: string;
   amount: string;
   status: string;
@@ -352,6 +353,7 @@ export async function getDashboardData(userId: string, isAdmin = false): Promise
       id: invoice.id,
       invoiceNo: invoice.invoiceNo,
       customer: invoice.customer.name,
+      customerEmail: invoice.customer.email,
       date: dateFormatter.format(invoice.createdAt),
       amount: new Intl.NumberFormat("en-US", {
         style: "currency",
