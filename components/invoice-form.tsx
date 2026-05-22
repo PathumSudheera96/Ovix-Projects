@@ -1,7 +1,8 @@
 "use client";
 
 import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   createInvoiceAction,
@@ -19,6 +20,37 @@ type InvoiceItem = {
   rate: number;
 };
 
+type SavedCustomer = {
+  name: string;
+  email: string | null;
+  phone: string | null;
+};
+
+export type InvoiceFormInitialData = {
+  invoiceNo?: string;
+  currency?: string;
+  title?: string;
+  companyName?: string;
+  companyEmail?: string;
+  companyPhone?: string;
+  companyAddress?: string;
+  companyLogoUrl?: string;
+  dueDate?: string;
+  status?: "draft" | "sent" | "paid" | "overdue";
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  notes?: string;
+  taxRate?: number;
+  discountType?: "none" | "percent" | "fixed";
+  discountValue?: number;
+  items?: Array<{
+    description: string;
+    quantity: number;
+    rate: number;
+  }>;
+};
+
 const defaultItems: InvoiceItem[] = [
   {
     id: "brand-identity-design",
@@ -33,6 +65,7 @@ const defaultItems: InvoiceItem[] = [
     rate: 450,
   },
 ];
+const MAX_LOGO_SIZE_BYTES = 4 * 1024 * 1024;
 
 function createItem(): InvoiceItem {
   return {
@@ -87,25 +120,59 @@ function createDefaultInvoiceNumber() {
   return `INV-${y}${m}${d}-${t}`;
 }
 
-export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
+function toDateInputValue(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function normalizeInitialItems(initialData?: InvoiceFormInitialData): InvoiceItem[] {
+  if (!initialData?.items?.length) {
+    return defaultItems;
+  }
+
+  return initialData.items.map((item, index) => ({
+    id: `initial-${index}-${item.description || "item"}`.toLowerCase().replace(/\s+/g, "-"),
+    description: item.description,
+    quantity: Math.max(1, Math.trunc(item.quantity || 1)),
+    rate: Math.max(0, item.rate || 0),
+  }));
+}
+
+export function InvoiceForm({
+  csrfToken,
+  initialData,
+}: {
+  csrfToken: string;
+  initialData?: InvoiceFormInitialData;
+}) {
+  const router = useRouter();
   const [actionState, formAction, isPending] = useActionState(
     createInvoiceAction,
     initialActionState
   );
-  const [items, setItems] = useState<InvoiceItem[]>(defaultItems);
-  const [taxRate, setTaxRate] = useState(8);
-  const [discountType, setDiscountType] = useState<"none" | "percent" | "fixed">("none");
-  const [discountValue, setDiscountValue] = useState(0);
-  const [invoiceNo] = useState(() => createDefaultInvoiceNumber());
-  const [currency, setCurrency] = useState("USD");
-  const [logoUrl, setLogoUrl] = useState("");
+  const [items, setItems] = useState<InvoiceItem[]>(() => normalizeInitialItems(initialData));
+  const [taxRate, setTaxRate] = useState(initialData?.taxRate ?? 8);
+  const [discountType, setDiscountType] = useState<"none" | "percent" | "fixed">(
+    initialData?.discountType ?? "none"
+  );
+  const [discountValue, setDiscountValue] = useState(initialData?.discountValue ?? 0);
+  const [invoiceNo] = useState(() => initialData?.invoiceNo || createDefaultInvoiceNumber());
+  const [currency, setCurrency] = useState(initialData?.currency ?? "USD");
+  const [logoStoredUrl, setLogoStoredUrl] = useState(initialData?.companyLogoUrl ?? "");
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState(initialData?.companyLogoUrl ?? "");
+  const [logoLoadFailed, setLogoLoadFailed] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [companyName, setCompanyName] = useState("Your Company");
-  const [invoiceTitle, setInvoiceTitle] = useState("INVOICE");
-  const [companyEmail, setCompanyEmail] = useState("");
-  const [companyPhone, setCompanyPhone] = useState("");
-  const [companyAddress, setCompanyAddress] = useState("");
+  const [companyName, setCompanyName] = useState(initialData?.companyName ?? "Your Company");
+  const [invoiceTitle, setInvoiceTitle] = useState(initialData?.title ?? "INVOICE");
+  const [companyEmail, setCompanyEmail] = useState(initialData?.companyEmail ?? "");
+  const [companyPhone, setCompanyPhone] = useState(initialData?.companyPhone ?? "");
+  const [companyAddress, setCompanyAddress] = useState(initialData?.companyAddress ?? "");
   const [logoUploading, setLogoUploading] = useState(false);
+  const [logoUploadMessage, setLogoUploadMessage] = useState("");
+  const [customerName, setCustomerName] = useState(initialData?.customerName ?? "");
+  const [customerEmail, setCustomerEmail] = useState(initialData?.customerEmail ?? "");
+  const [customerPhone, setCustomerPhone] = useState(initialData?.customerPhone ?? "");
+  const [savedCustomers, setSavedCustomers] = useState<SavedCustomer[]>([]);
+  const objectPreviewUrlRef = useRef<string | null>(null);
 
   const totals = useMemo(() => {
     const subtotal = items.reduce(
@@ -157,6 +224,25 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
 
   async function onLogoFileChange(file: File | undefined) {
     if (!file) return;
+    setLogoUploadMessage("");
+    if (objectPreviewUrlRef.current) {
+      URL.revokeObjectURL(objectPreviewUrlRef.current);
+      objectPreviewUrlRef.current = null;
+    }
+
+    const localPreviewUrl = URL.createObjectURL(file);
+    objectPreviewUrlRef.current = localPreviewUrl;
+    setLogoLoadFailed(false);
+    setLogoPreviewUrl(localPreviewUrl);
+
+    if (file.size > MAX_LOGO_SIZE_BYTES) {
+      setLogoUploadMessage("Logo must be 4MB or less.");
+      setLogoPreviewUrl(logoStoredUrl);
+      setLogoLoadFailed(false);
+      URL.revokeObjectURL(localPreviewUrl);
+      objectPreviewUrlRef.current = null;
+      return;
+    }
 
     const payload = new FormData();
     payload.append("file", file);
@@ -171,12 +257,70 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
       if (!response.ok || !result.ok || !result.url) {
         throw new Error(result.message ?? "Upload failed.");
       }
-      setLogoUrl(result.url);
+      setLogoLoadFailed(false);
+      setLogoStoredUrl(result.url);
+      setLogoPreviewUrl(`${result.url}?v=${Date.now()}`);
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+        objectPreviewUrlRef.current = null;
+      }
+      setLogoUploadMessage("Logo uploaded.");
     } catch {
-      // Keep UI quiet and non-blocking; users can retry upload.
+      setLogoUploadMessage("Logo upload failed. Please try again.");
+      setLogoPreviewUrl(logoStoredUrl);
+      setLogoLoadFailed(false);
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+        objectPreviewUrlRef.current = null;
+      }
     } finally {
       setLogoUploading(false);
     }
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/customers", { method: "GET", cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) return [];
+        const json = (await response.json()) as {
+          ok: boolean;
+          customers?: SavedCustomer[];
+        };
+        return json.ok && Array.isArray(json.customers) ? json.customers : [];
+      })
+      .then((customers) => {
+        if (!cancelled) setSavedCustomers(customers);
+      })
+      .catch(() => {
+        if (!cancelled) setSavedCustomers([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (actionState.ok) {
+      router.refresh();
+    }
+  }, [actionState.ok, router]);
+
+  useEffect(() => {
+    return () => {
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+      }
+    };
+  }, []);
+
+  function applySavedCustomer(nextName: string) {
+    const match = savedCustomers.find(
+      (customer) => customer.name.toLowerCase() === nextName.trim().toLowerCase()
+    );
+    if (!match) return;
+    setCustomerEmail(match.email ?? "");
+    setCustomerPhone(match.phone ?? "");
   }
 
   return (
@@ -185,6 +329,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
       <input type="hidden" name="currency" value={currency} />
       <input type="hidden" name="discountType" value={discountType} />
       <input type="hidden" name="discountValue" value={discountValue} />
+      <input type="hidden" name="companyLogoUrl" value={logoStoredUrl} />
       <div className="border-b p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-3">
@@ -197,9 +342,15 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                   htmlFor="company-logo-file"
                   className="relative flex size-[96px] cursor-pointer items-center justify-center overflow-hidden rounded-md border bg-muted hover:bg-muted/80"
                 >
-                  {logoUrl ? (
+                  {logoPreviewUrl && !logoLoadFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logoUrl} alt="Company logo" className="size-full object-cover" />
+                    <img
+                      key={logoPreviewUrl}
+                      src={logoPreviewUrl}
+                      alt="Company logo"
+                      className="size-full object-cover"
+                      onError={() => setLogoLoadFailed(true)}
+                    />
                   ) : logoUploading ? (
                     <Loader2 className="size-5 animate-spin text-muted-foreground" />
                   ) : (
@@ -209,10 +360,13 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 <Input
                   id="company-logo-file"
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  accept="image/png,image/jpeg"
                   className="hidden"
                   onChange={(event) => void onLogoFileChange(event.target.files?.[0])}
                 />
+                {logoUploadMessage ? (
+                  <p className="text-xs text-muted-foreground">{logoUploadMessage}</p>
+                ) : null}
               </div>
               <div className="grid gap-2 md:grid-cols-2">
                 <label className="text-sm font-medium" htmlFor="company-name">
@@ -221,11 +375,13 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 <Input
                   className="md:col-span-2"
                   id="company-name"
+                  name="companyName"
                   value={companyName}
                   onChange={(event) => setCompanyName(event.target.value)}
                 />
                 <Input
                   id="company-email"
+                  name="companyEmail"
                   type="email"
                   placeholder="Company email (required)"
                   value={companyEmail}
@@ -234,6 +390,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 />
                 <Input
                   id="company-phone"
+                  name="companyPhone"
                   placeholder="Company phone (optional)"
                   value={companyPhone}
                   onChange={(event) => setCompanyPhone(event.target.value)}
@@ -241,6 +398,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 <Input
                   className="md:col-span-2"
                   id="company-address"
+                  name="companyAddress"
                   placeholder="Company address (optional)"
                   value={companyAddress}
                   onChange={(event) => setCompanyAddress(event.target.value)}
@@ -270,6 +428,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
               </label>
               <Input
                 id="invoice-title"
+                name="title"
                 value={invoiceTitle}
                 onChange={(event) => setInvoiceTitle(event.target.value)}
               />
@@ -282,7 +441,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 id="invoice-date"
                 name="dueDate"
                 type="date"
-                defaultValue="2026-05-26"
+                defaultValue={initialData?.dueDate ?? toDateInputValue(new Date())}
               />
             </div>
             <div className="col-span-2 space-y-2">
@@ -317,8 +476,21 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 id="customer-name"
                 name="customerName"
                 placeholder="Customer name"
+                list="saved-customers"
+                value={customerName}
                 required
+                onChange={(event) => {
+                  const nextName = event.target.value;
+                  setCustomerName(nextName);
+                  applySavedCustomer(nextName);
+                }}
+                onBlur={(event) => applySavedCustomer(event.target.value)}
               />
+              <datalist id="saved-customers">
+                {savedCustomers.map((customer) => (
+                  <option key={`${customer.name}:${customer.email ?? ""}`} value={customer.name} />
+                ))}
+              </datalist>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="customer-email">
@@ -329,6 +501,8 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 name="customerEmail"
                 type="email"
                 placeholder="billing@example.com"
+                value={customerEmail}
+                onChange={(event) => setCustomerEmail(event.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -339,6 +513,8 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 id="customer-phone"
                 name="customerPhone"
                 placeholder="+1 555 0199"
+                value={customerPhone}
+                onChange={(event) => setCustomerPhone(event.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -349,7 +525,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
                 id="invoice-status"
                 name="status"
                 className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                defaultValue="draft"
+                defaultValue={initialData?.status ?? "draft"}
               >
                 <option value="draft">Draft</option>
                 <option value="sent">Sent</option>
@@ -483,6 +659,7 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
               id="invoice-notes"
               name="notes"
               placeholder="Payment terms, bank details, or a short message."
+              defaultValue={initialData?.notes ?? ""}
             />
           </div>
         </div>
@@ -568,6 +745,17 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
             <Button type="submit" variant="success" disabled={isPending}>
               {isPending ? "Saving..." : "Save invoice"}
             </Button>
+            {actionState.ok && actionState.invoiceId ? (
+              <Button asChild type="button" variant="warning">
+                <a
+                  href={`/api/invoices/${actionState.invoiceId}/export`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Export PDF
+                </a>
+              </Button>
+            ) : null}
             <Button type="button" variant="info" onClick={() => setPreviewOpen(true)}>
               Preview invoice
             </Button>
@@ -610,9 +798,15 @@ export function InvoiceForm({ csrfToken }: { csrfToken: string }) {
             <div className="mb-8 grid gap-6 md:grid-cols-[1fr_auto]">
               <div className="flex items-start gap-3">
                 <div className="flex size-14 items-center justify-center overflow-hidden rounded-md border bg-muted">
-                  {logoUrl ? (
+                  {logoPreviewUrl && !logoLoadFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logoUrl} alt="Company logo" className="size-full object-cover" />
+                    <img
+                      key={`preview-${logoPreviewUrl}`}
+                      src={logoPreviewUrl}
+                      alt="Company logo"
+                      className="size-full object-cover"
+                      onError={() => setLogoLoadFailed(true)}
+                    />
                   ) : (
                     <span className="text-xs text-muted-foreground">Logo</span>
                   )}

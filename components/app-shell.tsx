@@ -10,6 +10,7 @@ import {
   FileText,
   Home,
   Menu,
+  Plus,
   Settings,
   Users,
   WalletCards,
@@ -130,6 +131,12 @@ export function AppShell({
               <p className="truncate text-sm text-muted-foreground">Billing workspace</p>
             </div>
             <div className="ml-auto flex items-center gap-2">
+              <Button asChild type="button" variant="success" className="hidden sm:inline-flex">
+                <Link href="/invoices/new">
+                  <Plus className="size-4" />
+                  Create invoice
+                </Link>
+              </Button>
               <Button type="button" variant="outline" size="icon" aria-label="Notifications">
                 <Bell className="size-4" />
               </Button>

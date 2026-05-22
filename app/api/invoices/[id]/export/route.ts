@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { buildInvoicePdf } from "@/lib/pdf/invoice-pdf";
+import { buildInvoicePdfBytesForUser } from "@/lib/pdf/invoice-export";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
@@ -15,39 +14,21 @@ export async function GET(
 
   const { id } = await params;
   const isAdmin = session.user.role === "ADMIN";
-  const invoice = await prisma.invoice.findFirst({
-    where: { id, ...(isAdmin ? {} : { userId: session.user.id }) },
-    include: {
-      customer: true,
-      items: { orderBy: { id: "asc" } },
-    },
-  });
+  const baseUrl = new URL(request.url).origin;
+  const { bytes, renderer, invoice } = await buildInvoicePdfBytesForUser({
+    invoiceId: id,
+    userId: session.user.id,
+    isAdmin,
+    baseUrl,
+  }).catch(() => ({
+    bytes: null,
+    renderer: "none",
+    invoice: null,
+  }));
 
-  if (!invoice) {
+  if (!bytes || !invoice) {
     return NextResponse.json({ ok: false, message: "Invoice not found" }, { status: 404 });
   }
-
-  const bytes = await buildInvoicePdf({
-    invoiceNo: invoice.invoiceNo,
-    createdAt: invoice.createdAt,
-    dueDate: invoice.dueDate,
-    status: invoice.status,
-    customer: {
-      name: invoice.customer.name,
-      email: invoice.customer.email,
-      phone: invoice.customer.phone,
-    },
-    items: invoice.items.map((item) => ({
-      description: item.description,
-      quantity: item.quantity,
-      price: item.price,
-      total: item.total,
-    })),
-    subtotal: invoice.subtotal,
-    tax: invoice.tax,
-    total: invoice.total,
-    notes: invoice.notes,
-  });
 
   const pdfBuffer = Buffer.from(bytes);
 
@@ -57,6 +38,7 @@ export async function GET(
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="invoice-${invoice.invoiceNo}.pdf"`,
       "Cache-Control": "private, no-store",
+      "X-Invoice-Pdf-Renderer": renderer,
     },
   });
 }

@@ -1,9 +1,21 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import {
+  PDFDocument,
+  StandardFonts,
+  rgb,
+  type PDFFont,
+  type PDFPage,
+} from "pdf-lib";
 
 type InvoicePdfInput = {
+  currency?: string | null;
   title?: string | null;
+  companyName?: string | null;
+  companyEmail?: string | null;
+  companyPhone?: string | null;
+  companyAddress?: string | null;
+  companyLogoUrl?: string | null;
   invoiceNo: string;
   createdAt: Date;
   dueDate: Date | null;
@@ -33,10 +45,10 @@ const PAGE = {
   marginBottom: 36,
 };
 
-function money(value: number) {
+function money(value: number, currency = "USD") {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency,
     maximumFractionDigits: 2,
   }).format(value);
 }
@@ -97,195 +109,299 @@ async function getFonts(pdfDoc: PDFDocument) {
   }
 }
 
+async function loadLogoImage(pdfDoc: PDFDocument, logoUrl?: string | null) {
+  const url = (logoUrl ?? "").trim();
+  if (!url) return null;
+
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) return null;
+
+    const contentType = response.headers.get("content-type") ?? "";
+    const bytes = new Uint8Array(await response.arrayBuffer());
+
+    if (contentType.includes("png")) {
+      return await pdfDoc.embedPng(bytes);
+    }
+
+    if (contentType.includes("jpeg") || contentType.includes("jpg")) {
+      return await pdfDoc.embedJpg(bytes);
+    }
+
+    if (url.endsWith(".png")) {
+      return await pdfDoc.embedPng(bytes);
+    }
+
+    if (url.endsWith(".jpg") || url.endsWith(".jpeg")) {
+      return await pdfDoc.embedJpg(bytes);
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function buildInvoicePdf(input: InvoicePdfInput) {
   const pdfDoc = await PDFDocument.create();
   const { regular, bold } = await getFonts(pdfDoc);
+  const embeddedLogo = await loadLogoImage(pdfDoc, input.companyLogoUrl);
   const pages: PDFPage[] = [];
   const contentWidth = PAGE.width - PAGE.marginX * 2;
+  const currency = (input.currency ?? "USD").trim().toUpperCase();
   const addPage = () => {
     const page = pdfDoc.addPage([PAGE.width, PAGE.height]);
     pages.push(page);
     return page;
   };
-
-  const drawTableHeader = (page: PDFPage, topY: number) => {
-    const col = {
-      desc: PAGE.marginX + 10,
-      qty: PAGE.marginX + 338,
-      rate: PAGE.marginX + 392,
-      total: PAGE.marginX + 468,
-    };
-    page.drawRectangle({
-      x: PAGE.marginX,
-      y: topY - 20,
-      width: contentWidth,
-      height: 24,
-      color: rgb(0.96, 0.96, 0.97),
-    });
-    page.drawText("Description", { x: col.desc, y: topY - 12, size: 10, font: bold, color: rgb(0.2, 0.2, 0.22) });
-    page.drawText("Qty", { x: col.qty, y: topY - 12, size: 10, font: bold, color: rgb(0.2, 0.2, 0.22) });
-    page.drawText("Rate", { x: col.rate, y: topY - 12, size: 10, font: bold, color: rgb(0.2, 0.2, 0.22) });
-    page.drawText("Amount", { x: col.total, y: topY - 12, size: 10, font: bold, color: rgb(0.2, 0.2, 0.22) });
-    return col;
-  };
-
-  const drawFirstPageHeader = (page: PDFPage) => {
-    const topY = PAGE.height - PAGE.marginTop;
-    page.drawText("InvoiceFlow", { x: PAGE.marginX, y: topY, size: 28, font: bold, color: rgb(0.12, 0.12, 0.14) });
-    drawRightText(page, (input.title?.trim() || "INVOICE").toUpperCase(), PAGE.width - PAGE.marginX, topY + 2, 20, regular);
-    drawRightText(page, `# ${input.invoiceNo}`, PAGE.width - PAGE.marginX, topY - 24, 12, regular, rgb(0.43, 0.43, 0.46));
-
-    const metaY = topY - 62;
-    const rightLabelX = PAGE.width - PAGE.marginX - 172;
-    const rightValueX = PAGE.width - PAGE.marginX;
-    const rows = [
-      ["Date", fmtDate(input.createdAt)],
-      ["Due", fmtDate(input.dueDate)],
-      ["Status", input.status.toUpperCase()],
-    ] as const;
-    rows.forEach(([label, value], index) => {
-      const y = metaY - index * 16;
-      page.drawText(`${label}:`, { x: rightLabelX, y, size: 10, font: regular, color: rgb(0.44, 0.44, 0.47) });
-      drawRightText(page, value, rightValueX, y, 10, label === "Status" ? bold : regular);
-    });
-
-    let billY = topY - 84;
-    page.drawText("Bill To", { x: PAGE.marginX, y: billY, size: 11, font: regular, color: rgb(0.45, 0.45, 0.48) });
-    billY -= 20;
-    page.drawText(input.customer.name, { x: PAGE.marginX, y: billY, size: 14, font: bold, color: rgb(0.14, 0.14, 0.16) });
-    billY -= 16;
-    if (input.customer.email) {
-      page.drawText(input.customer.email, { x: PAGE.marginX, y: billY, size: 10, font: regular, color: rgb(0.3, 0.3, 0.33) });
-      billY -= 13;
-    }
-    if (input.customer.phone) {
-      page.drawText(input.customer.phone, { x: PAGE.marginX, y: billY, size: 10, font: regular, color: rgb(0.3, 0.3, 0.33) });
-    }
-
-    const balanceY = topY - 170;
-    page.drawRectangle({
-      x: PAGE.width - PAGE.marginX - 240,
-      y: balanceY,
-      width: 240,
-      height: 34,
-      color: rgb(0.95, 0.95, 0.96),
-      borderColor: rgb(0.89, 0.89, 0.91),
-      borderWidth: 0.6,
-    });
-    page.drawText("Balance Due", { x: PAGE.width - PAGE.marginX - 228, y: balanceY + 11, size: 11, font: bold, color: rgb(0.2, 0.2, 0.22) });
-    drawRightText(page, money(input.total), PAGE.width - PAGE.marginX - 12, balanceY + 11, 11, bold);
-    return balanceY - 26;
-  };
-
-  const drawNextPageHeader = (page: PDFPage) => {
-    const topY = PAGE.height - PAGE.marginTop;
-    page.drawText(`# ${input.invoiceNo}`, { x: PAGE.marginX, y: topY, size: 11, font: bold, color: rgb(0.2, 0.2, 0.22) });
-    drawRightText(page, "INVOICE ITEMS", PAGE.width - PAGE.marginX, topY, 11, regular);
-    return topY - 24;
-  };
-
-  let page = addPage();
-  let y = drawFirstPageHeader(page);
-  const col = drawTableHeader(page, y);
-  y -= 30;
-
-  const descWidth = 320;
-  const minBottomY = PAGE.marginBottom + 130;
-  for (const item of input.items) {
-    const lines = wrapText(item.description, regular, 10, descWidth).slice(0, 4);
-    const rowHeight = Math.max(24, lines.length * 12 + 8);
-    if (y - rowHeight < minBottomY) {
-      page = addPage();
-      y = drawNextPageHeader(page);
-      drawTableHeader(page, y);
-      y -= 30;
-    }
-    page.drawRectangle({
-      x: PAGE.marginX,
-      y: y - rowHeight + 4,
-      width: contentWidth,
-      height: rowHeight,
-      color: rgb(1, 1, 1),
-      borderColor: rgb(0.9, 0.9, 0.92),
-      borderWidth: 0.6,
-    });
-    lines.forEach((line, index) => {
-      page.drawText(line, {
-        x: col.desc,
-        y: y - 10 - index * 12,
-        size: 10,
-        font: regular,
-        color: rgb(0.17, 0.17, 0.2),
-      });
-    });
-    page.drawText(String(item.quantity), { x: col.qty + 2, y: y - 10, size: 10, font: regular, color: rgb(0.2, 0.2, 0.22) });
-    drawRightText(page, money(item.price), col.total - 12, y - 10, 10, regular);
-    drawRightText(page, money(item.total), PAGE.width - PAGE.marginX - 10, y - 10, 10, bold);
-    y -= rowHeight + 4;
-  }
-
-  const notesLines = input.notes ? wrapText(input.notes, regular, 10, 280).slice(0, 8) : [];
-  const notesHeight = notesLines.length ? 26 + notesLines.length * 12 : 0;
-  const totalsHeight = 98;
-  const neededHeight = Math.max(notesHeight, totalsHeight) + 18;
-  if (y - neededHeight < PAGE.marginBottom + 8) {
-    page = addPage();
-    y = drawNextPageHeader(page) - 18;
-  }
-
-  const sectionTop = y;
-  if (notesLines.length) {
-    page.drawText("Notes", { x: PAGE.marginX, y: sectionTop - 2, size: 11, font: bold, color: rgb(0.2, 0.2, 0.22) });
-    notesLines.forEach((line, index) => {
-      page.drawText(line, {
-        x: PAGE.marginX,
-        y: sectionTop - 18 - index * 12,
-        size: 10,
-        font: regular,
-        color: rgb(0.35, 0.35, 0.38),
-      });
-    });
-  }
-
-  const totalsX = PAGE.width - PAGE.marginX - 220;
-  const totalsY = sectionTop - totalsHeight + 8;
-  page.drawRectangle({
-    x: totalsX,
-    y: totalsY,
-    width: 220,
-    height: totalsHeight,
-    color: rgb(0.97, 0.97, 0.98),
-    borderColor: rgb(0.9, 0.9, 0.92),
-    borderWidth: 0.8,
-  });
-  page.drawText("Subtotal", { x: totalsX + 12, y: totalsY + 72, size: 10, font: regular, color: rgb(0.3, 0.3, 0.33) });
-  drawRightText(page, money(input.subtotal), totalsX + 208, totalsY + 72, 10, regular);
-  page.drawText("Tax", { x: totalsX + 12, y: totalsY + 54, size: 10, font: regular, color: rgb(0.3, 0.3, 0.33) });
-  drawRightText(page, money(input.tax), totalsX + 208, totalsY + 54, 10, regular);
-  page.drawLine({
-    start: { x: totalsX + 12, y: totalsY + 42 },
-    end: { x: totalsX + 208, y: totalsY + 42 },
-    thickness: 0.7,
-    color: rgb(0.86, 0.86, 0.89),
-  });
-  page.drawText("Total", { x: totalsX + 12, y: totalsY + 22, size: 12, font: bold, color: rgb(0.14, 0.14, 0.16) });
-  drawRightText(page, money(input.total), totalsX + 208, totalsY + 22, 12, bold);
-
-  pages.forEach((page, index) => {
-    page.drawLine({
-      start: { x: PAGE.marginX, y: PAGE.marginBottom + 8 },
-      end: { x: PAGE.width - PAGE.marginX, y: PAGE.marginBottom + 8 },
-      thickness: 0.6,
-      color: rgb(0.9, 0.9, 0.92),
-    });
+  const drawPageFooter = (page: PDFPage, index: number) => {
     page.drawText("Generated by InvoiceFlow", {
       x: PAGE.marginX,
       y: PAGE.marginBottom - 6,
       size: 9,
       font: regular,
-      color: rgb(0.52, 0.52, 0.56),
+      color: rgb(0.38, 0.38, 0.4),
     });
-    drawRightText(page, `${index + 1}/${pages.length}`, PAGE.width - PAGE.marginX, PAGE.marginBottom - 6, 9, regular, rgb(0.52, 0.52, 0.56));
+    drawRightText(page, `${index + 1}/${pages.length}`, PAGE.width - PAGE.marginX, PAGE.marginBottom - 6, 9, regular, rgb(0.38, 0.38, 0.4));
+  };
+
+  const drawDarkHeader = (page: PDFPage) => {
+    const headerHeight = 156;
+    const headerY = PAGE.height - PAGE.marginTop - headerHeight;
+
+    page.drawRectangle({
+      x: PAGE.marginX,
+      y: headerY,
+      width: contentWidth,
+      height: headerHeight,
+      color: rgb(0.09, 0.09, 0.1),
+    });
+
+    if (embeddedLogo) {
+      page.drawImage(embeddedLogo, {
+        x: PAGE.marginX + 20,
+        y: headerY + 92,
+        width: 42,
+        height: 42,
+      });
+    } else {
+      page.drawRectangle({
+        x: PAGE.marginX + 20,
+        y: headerY + 92,
+        width: 42,
+        height: 42,
+        color: rgb(0.2, 0.2, 0.22),
+      });
+      page.drawText("I", {
+        x: PAGE.marginX + 35,
+        y: headerY + 104,
+        size: 18,
+        font: bold,
+        color: rgb(1, 1, 1),
+      });
+    }
+
+    page.drawText(input.companyName?.trim() || "InvoiceFlow", {
+      x: PAGE.marginX + 74,
+      y: headerY + 112,
+      size: 19,
+      font: bold,
+      color: rgb(1, 1, 1),
+    });
+    page.drawText(input.companyEmail?.trim() || "billing@invoiceflow.app", {
+      x: PAGE.marginX + 74,
+      y: headerY + 94,
+      size: 10,
+      font: regular,
+      color: rgb(0.84, 0.84, 0.86),
+    });
+
+    drawRightText(page, (input.title?.trim() || "INVOICE").toUpperCase(), PAGE.width - PAGE.marginX - 20, headerY + 114, 28, bold, rgb(1, 1, 1));
+    drawRightText(page, `#${input.invoiceNo}`, PAGE.width - PAGE.marginX - 20, headerY + 90, 12, regular, rgb(0.75, 0.75, 0.78));
+
+    page.drawRectangle({
+      x: PAGE.width - PAGE.marginX - 170,
+      y: headerY + 22,
+      width: 150,
+      height: 26,
+      color: rgb(0.23, 0.23, 0.25),
+    });
+    drawRightText(page, input.status.toUpperCase(), PAGE.width - PAGE.marginX - 34, headerY + 30, 10, bold, rgb(0.92, 0.92, 0.93));
+
+    return headerY - 16;
+  };
+
+  const drawInfoCards = (page: PDFPage, topY: number) => {
+    const cardGap = 12;
+    const cardWidth = (contentWidth - cardGap * 2) / 3;
+    const cardHeight = 95;
+    const labels = ["Bill From", "Bill To", "Invoice Meta"];
+    const details: string[][] = [
+      [
+        input.companyName?.trim() || "InvoiceFlow",
+        input.companyEmail?.trim() || "support@invoiceflow.app",
+        input.companyPhone?.trim() || input.companyAddress?.trim() || "-",
+      ],
+      [input.customer.name, input.customer.email ?? "-", input.customer.phone ?? "-"],
+      [`Invoice Date: ${fmtDate(input.createdAt)}`, `Due Date: ${fmtDate(input.dueDate)}`, `Currency: ${currency}`],
+    ];
+
+    for (let i = 0; i < 3; i += 1) {
+      const x = PAGE.marginX + i * (cardWidth + cardGap);
+      page.drawRectangle({
+        x,
+        y: topY - cardHeight,
+        width: cardWidth,
+        height: cardHeight,
+        color: rgb(0.985, 0.985, 0.99),
+        borderColor: rgb(0.88, 0.88, 0.9),
+        borderWidth: 0.8,
+      });
+      page.drawText(labels[i], { x: x + 12, y: topY - 20, size: 9, font: bold, color: rgb(0.38, 0.38, 0.4) });
+      let lineY = topY - 38;
+      details[i].forEach((line, idx) => {
+        page.drawText(line, {
+          x: x + 12,
+          y: lineY,
+          size: idx === 0 ? 11 : 9.4,
+          font: idx === 0 ? bold : regular,
+          color: rgb(0.12, 0.12, 0.14),
+        });
+        lineY -= 14;
+      });
+    }
+
+    return topY - cardHeight - 18;
+  };
+
+  const drawTableHeader = (page: PDFPage, topY: number) => {
+    const col = {
+      desc: PAGE.marginX + 12,
+      qty: PAGE.marginX + 348,
+      rate: PAGE.marginX + 398,
+      total: PAGE.marginX + 466,
+    };
+    page.drawRectangle({
+      x: PAGE.marginX,
+      y: topY - 22,
+      width: contentWidth,
+      height: 24,
+      color: rgb(0.11, 0.11, 0.12),
+    });
+    page.drawText("Service", { x: col.desc, y: topY - 14, size: 10, font: bold, color: rgb(1, 1, 1) });
+    page.drawText("Qty", { x: col.qty, y: topY - 14, size: 10, font: bold, color: rgb(1, 1, 1) });
+    page.drawText("Rate", { x: col.rate, y: topY - 14, size: 10, font: bold, color: rgb(1, 1, 1) });
+    page.drawText("Total", { x: col.total, y: topY - 14, size: 10, font: bold, color: rgb(1, 1, 1) });
+    return col;
+  };
+
+  const drawContinuationHeader = (page: PDFPage) => {
+    const top = PAGE.height - PAGE.marginTop;
+    page.drawText(`Invoice #${input.invoiceNo}`, { x: PAGE.marginX, y: top, size: 12, font: bold, color: rgb(0.12, 0.12, 0.14) });
+    drawRightText(page, "ITEM DETAILS", PAGE.width - PAGE.marginX, top, 11, regular, rgb(0.32, 0.32, 0.34));
+    return top - 20;
+  };
+
+  let page = addPage();
+  let y = drawDarkHeader(page);
+  y = drawInfoCards(page, y);
+  const col = drawTableHeader(page, y);
+  y -= 34;
+
+  const descWidth = 318;
+  const itemsBottom = PAGE.marginBottom + 170;
+  input.items.forEach((item, index) => {
+    const lines = wrapText(item.description, regular, 10, descWidth).slice(0, 4);
+    const rowHeight = Math.max(28, lines.length * 12 + 10);
+    if (y - rowHeight < itemsBottom) {
+      page = addPage();
+      y = drawContinuationHeader(page);
+      drawTableHeader(page, y);
+      y -= 34;
+    }
+
+    const rowShade = index % 2 === 0 ? rgb(1, 1, 1) : rgb(0.992, 0.992, 0.995);
+    page.drawRectangle({
+      x: PAGE.marginX,
+      y: y - rowHeight + 4,
+      width: contentWidth,
+      height: rowHeight,
+      color: rowShade,
+      borderColor: rgb(0.9, 0.9, 0.92),
+      borderWidth: 0.6,
+    });
+
+    lines.forEach((line, lineIndex) => {
+      page.drawText(line, {
+        x: col.desc,
+        y: y - 10 - lineIndex * 12,
+        size: lineIndex === 0 ? 10 : 9.2,
+        font: lineIndex === 0 ? bold : regular,
+        color: rgb(0.12, 0.12, 0.14),
+      });
+    });
+    page.drawText(String(item.quantity), { x: col.qty + 2, y: y - 10, size: 10, font: regular, color: rgb(0.16, 0.16, 0.18) });
+    drawRightText(page, money(item.price, currency), col.total - 14, y - 10, 10, regular, rgb(0.16, 0.16, 0.18));
+    drawRightText(page, money(item.total, currency), PAGE.width - PAGE.marginX - 12, y - 10, 10, bold, rgb(0.12, 0.12, 0.14));
+    y -= rowHeight + 4;
+  });
+
+  const notesLines = input.notes ? wrapText(input.notes, regular, 10, 290).slice(0, 8) : ["Thank you for your business."];
+  const notesHeight = 34 + notesLines.length * 12;
+  const summaryHeight = 124;
+  const sectionHeight = Math.max(notesHeight, summaryHeight);
+  if (y - sectionHeight < PAGE.marginBottom + 12) {
+    page = addPage();
+    y = drawContinuationHeader(page) - 12;
+  }
+
+  const sectionY = y;
+  const notesWidth = 304;
+  page.drawRectangle({
+    x: PAGE.marginX,
+    y: sectionY - notesHeight,
+    width: notesWidth,
+    height: notesHeight,
+    color: rgb(0.99, 0.99, 0.995),
+    borderColor: rgb(0.89, 0.89, 0.91),
+    borderWidth: 0.8,
+  });
+  page.drawText("Notes", { x: PAGE.marginX + 12, y: sectionY - 20, size: 11, font: bold, color: rgb(0.13, 0.13, 0.15) });
+  notesLines.forEach((line, index) => {
+    page.drawText(line, {
+      x: PAGE.marginX + 12,
+      y: sectionY - 36 - index * 12,
+      size: 9.5,
+      font: regular,
+      color: rgb(0.28, 0.28, 0.3),
+    });
+  });
+
+  const summaryX = PAGE.width - PAGE.marginX - 214;
+  const summaryY = sectionY - summaryHeight;
+  page.drawRectangle({
+    x: summaryX,
+    y: summaryY,
+    width: 214,
+    height: summaryHeight,
+    color: rgb(0.12, 0.12, 0.14),
+  });
+  page.drawText("Invoice Summary", { x: summaryX + 14, y: summaryY + 100, size: 11, font: bold, color: rgb(1, 1, 1) });
+  page.drawText("Subtotal", { x: summaryX + 14, y: summaryY + 74, size: 10, font: regular, color: rgb(0.86, 0.86, 0.88) });
+  drawRightText(page, money(input.subtotal, currency), summaryX + 198, summaryY + 74, 10, bold, rgb(1, 1, 1));
+  page.drawText("Tax", { x: summaryX + 14, y: summaryY + 56, size: 10, font: regular, color: rgb(0.86, 0.86, 0.88) });
+  drawRightText(page, money(input.tax, currency), summaryX + 198, summaryY + 56, 10, bold, rgb(1, 1, 1));
+  page.drawLine({
+    start: { x: summaryX + 14, y: summaryY + 44 },
+    end: { x: summaryX + 198, y: summaryY + 44 },
+    thickness: 0.6,
+    color: rgb(0.35, 0.35, 0.38),
+  });
+  page.drawText("Total", { x: summaryX + 14, y: summaryY + 24, size: 12, font: bold, color: rgb(1, 1, 1) });
+  drawRightText(page, money(input.total, currency), summaryX + 198, summaryY + 24, 12, bold, rgb(1, 1, 1));
+
+  pages.forEach((page, index) => {
+    drawPageFooter(page, index);
   });
 
   return pdfDoc.save();

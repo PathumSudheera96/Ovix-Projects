@@ -1,7 +1,8 @@
 "use client";
 
 import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   updateInvoiceAction,
@@ -27,6 +28,13 @@ const currencyOptions =
 type EditInvoiceData = {
   id: string;
   invoiceNo: string;
+  currency: string;
+  title: string;
+  companyName: string;
+  companyEmail: string;
+  companyPhone: string;
+  companyAddress: string;
+  companyLogoUrl: string;
   dueDate: string;
   customerName: string;
   customerEmail: string;
@@ -36,6 +44,7 @@ type EditInvoiceData = {
   taxRate: number;
   items: InvoiceItem[];
 };
+const MAX_LOGO_SIZE_BYTES = 4 * 1024 * 1024;
 
 function formatCurrency(value: number, currency: string) {
   try {
@@ -69,21 +78,26 @@ export function InvoiceEditForm({
   csrfToken: string;
   invoice: EditInvoiceData;
 }) {
+  const router = useRouter();
   const [actionState, formAction, isPending] = useActionState(
     updateInvoiceAction.bind(null, invoice.id),
     initialActionState
   );
   const [items, setItems] = useState<InvoiceItem[]>(invoice.items);
   const [taxRate, setTaxRate] = useState(invoice.taxRate);
-  const [currency, setCurrency] = useState("USD");
-  const [logoUrl, setLogoUrl] = useState("");
-  const [companyName, setCompanyName] = useState("Your Company");
-  const [invoiceTitle, setInvoiceTitle] = useState("INVOICE");
-  const [companyEmail, setCompanyEmail] = useState("");
-  const [companyPhone, setCompanyPhone] = useState("");
-  const [companyAddress, setCompanyAddress] = useState("");
+  const [currency, setCurrency] = useState(invoice.currency || "USD");
+  const [logoStoredUrl, setLogoStoredUrl] = useState(invoice.companyLogoUrl);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState(invoice.companyLogoUrl);
+  const [companyName, setCompanyName] = useState(invoice.companyName);
+  const [invoiceTitle, setInvoiceTitle] = useState(invoice.title);
+  const [companyEmail, setCompanyEmail] = useState(invoice.companyEmail);
+  const [companyPhone, setCompanyPhone] = useState(invoice.companyPhone);
+  const [companyAddress, setCompanyAddress] = useState(invoice.companyAddress);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [logoLoadFailed, setLogoLoadFailed] = useState(false);
+  const [logoUploadMessage, setLogoUploadMessage] = useState("");
+  const objectPreviewUrlRef = useRef<string | null>(null);
 
   const totals = useMemo(() => {
     const subtotal = items.reduce((sum, item) => sum + item.quantity * item.rate, 0);
@@ -108,6 +122,23 @@ export function InvoiceEditForm({
 
   async function onLogoFileChange(file: File | undefined) {
     if (!file) return;
+    setLogoUploadMessage("");
+    if (objectPreviewUrlRef.current) {
+      URL.revokeObjectURL(objectPreviewUrlRef.current);
+      objectPreviewUrlRef.current = null;
+    }
+    const localPreviewUrl = URL.createObjectURL(file);
+    objectPreviewUrlRef.current = localPreviewUrl;
+    setLogoLoadFailed(false);
+    setLogoPreviewUrl(localPreviewUrl);
+    if (file.size > MAX_LOGO_SIZE_BYTES) {
+      setLogoUploadMessage("Logo must be 4MB or less.");
+      setLogoPreviewUrl(logoStoredUrl);
+      setLogoLoadFailed(false);
+      URL.revokeObjectURL(localPreviewUrl);
+      objectPreviewUrlRef.current = null;
+      return;
+    }
 
     const payload = new FormData();
     payload.append("file", file);
@@ -122,18 +153,45 @@ export function InvoiceEditForm({
       if (!response.ok || !result.ok || !result.url) {
         throw new Error(result.message ?? "Upload failed.");
       }
-      setLogoUrl(result.url);
+      setLogoLoadFailed(false);
+      setLogoStoredUrl(result.url);
+      setLogoPreviewUrl(`${result.url}?v=${Date.now()}`);
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+        objectPreviewUrlRef.current = null;
+      }
+      setLogoUploadMessage("Logo uploaded.");
     } catch {
-      // Keep UI quiet and non-blocking; users can retry upload.
+      setLogoUploadMessage("Logo upload failed. Please try again.");
+      setLogoPreviewUrl(logoStoredUrl);
+      setLogoLoadFailed(false);
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+        objectPreviewUrlRef.current = null;
+      }
     } finally {
       setLogoUploading(false);
     }
   }
 
+  useEffect(() => {
+    if (actionState.ok) {
+      router.refresh();
+    }
+  }, [actionState.ok, router]);
+
+  useEffect(() => {
+    return () => {
+      if (objectPreviewUrlRef.current) {
+        URL.revokeObjectURL(objectPreviewUrlRef.current);
+      }
+    };
+  }, []);
+
   return (
     <form action={formAction} className="rounded-lg border bg-card shadow-sm">
       <input type="hidden" name="csrfToken" value={csrfToken} />
-      <input type="hidden" name="currency" value={currency} />
+      <input type="hidden" name="companyLogoUrl" value={logoStoredUrl} />
       <div className="border-b p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-3">
@@ -144,9 +202,15 @@ export function InvoiceEditForm({
                   htmlFor="company-logo-file"
                   className="relative flex size-[96px] cursor-pointer items-center justify-center overflow-hidden rounded-md border bg-muted hover:bg-muted/80"
                 >
-                  {logoUrl ? (
+                  {logoPreviewUrl && !logoLoadFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logoUrl} alt="Company logo" className="size-full object-cover" />
+                    <img
+                      key={logoPreviewUrl}
+                      src={logoPreviewUrl}
+                      alt="Company logo"
+                      className="size-full object-cover"
+                      onError={() => setLogoLoadFailed(true)}
+                    />
                   ) : logoUploading ? (
                     <Loader2 className="size-5 animate-spin text-muted-foreground" />
                   ) : (
@@ -156,21 +220,26 @@ export function InvoiceEditForm({
                 <Input
                   id="company-logo-file"
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  accept="image/png,image/jpeg"
                   className="hidden"
                   onChange={(event) => void onLogoFileChange(event.target.files?.[0])}
                 />
+                {logoUploadMessage ? (
+                  <p className="text-xs text-muted-foreground">{logoUploadMessage}</p>
+                ) : null}
               </div>
               <div className="grid gap-2 md:grid-cols-2">
                 <label className="text-sm font-medium" htmlFor="company-name">Company</label>
                 <Input
                   className="md:col-span-2"
                   id="company-name"
+                  name="companyName"
                   value={companyName}
                   onChange={(event) => setCompanyName(event.target.value)}
                 />
                 <Input
                   id="company-email"
+                  name="companyEmail"
                   type="email"
                   placeholder="Company email (required)"
                   value={companyEmail}
@@ -179,6 +248,7 @@ export function InvoiceEditForm({
                 />
                 <Input
                   id="company-phone"
+                  name="companyPhone"
                   placeholder="Company phone (optional)"
                   value={companyPhone}
                   onChange={(event) => setCompanyPhone(event.target.value)}
@@ -186,6 +256,7 @@ export function InvoiceEditForm({
                 <Input
                   className="md:col-span-2"
                   id="company-address"
+                  name="companyAddress"
                   placeholder="Company address (optional)"
                   value={companyAddress}
                   onChange={(event) => setCompanyAddress(event.target.value)}
@@ -199,6 +270,7 @@ export function InvoiceEditForm({
               Currency
             </label>
             <select
+              name="currency"
               id="invoice-currency"
               className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={currency}
@@ -224,6 +296,7 @@ export function InvoiceEditForm({
               <label className="text-sm font-medium" htmlFor="invoice-title">Title</label>
               <Input
                 id="invoice-title"
+                name="title"
                 value={invoiceTitle}
                 onChange={(event) => setInvoiceTitle(event.target.value)}
               />
@@ -387,9 +460,15 @@ export function InvoiceEditForm({
             <div className="mb-8 grid gap-6 md:grid-cols-[1fr_auto]">
               <div className="flex items-start gap-3">
                 <div className="flex size-14 items-center justify-center overflow-hidden rounded-md border bg-muted">
-                  {logoUrl ? (
+                  {logoPreviewUrl && !logoLoadFailed ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logoUrl} alt="Company logo" className="size-full object-cover" />
+                    <img
+                      key={`preview-${logoPreviewUrl}`}
+                      src={logoPreviewUrl}
+                      alt="Company logo"
+                      className="size-full object-cover"
+                      onError={() => setLogoLoadFailed(true)}
+                    />
                   ) : (
                     <span className="text-xs text-muted-foreground">Logo</span>
                   )}

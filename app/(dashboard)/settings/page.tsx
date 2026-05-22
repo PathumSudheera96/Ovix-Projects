@@ -31,7 +31,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <input name="q" defaultValue={q} placeholder="Quick find setting..." className="h-10 rounded-md border border-input bg-background px-3 text-sm xl:col-span-2" />
         <select name="section" defaultValue={section} className="h-10 rounded-md border border-input bg-background px-3 text-sm"><option value="all">All sections</option><option value="profile">Profile</option><option value="billing">Billing</option><option value="security">Security</option></select>
         <select name="sort" defaultValue={sort} className="h-10 rounded-md border border-input bg-background px-3 text-sm"><option value="default">Default order</option><option value="az">Title A-Z</option><option value="za">Title Z-A</option></select>
-        <button type="submit" className="h-10 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">Apply</button>
+        <Button type="submit" variant="info">Apply</Button>
       </QueryFilterForm>
       <section className="grid gap-6 xl:grid-cols-2">
         {showProfile ? <form className="space-y-4 rounded-lg border bg-card p-5 shadow-sm"><h2 className="text-base font-semibold">Profile</h2><div className="space-y-2"><label htmlFor="name" className="text-sm font-medium">Full name</label><Input id="name" defaultValue={session.user.name ?? ""} /></div><div className="space-y-2"><label htmlFor="email" className="text-sm font-medium">Email</label><Input id="email" type="email" defaultValue={session.user.email ?? ""} /></div><Button type="button">Save profile</Button></form> : null}

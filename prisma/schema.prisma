@@ -91,6 +91,13 @@ model Customer {
 model Invoice {
   id          String        @id @default(cuid())
   invoiceNo   String        @unique
+  currency    String        @default("USD")
+  title       String?
+  companyName String?
+  companyEmail String?
+  companyPhone String?
+  companyAddress String?
+  companyLogoUrl String?
   subtotal    Float
   tax         Float
   total       Float
@@ -118,4 +125,12 @@ model InvoiceItem {
 
   invoiceId   String
   invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+}
+
+model ExchangeRateCache {
+  id         String   @id
+  base       String
+  rates      Json
+  fetchedAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

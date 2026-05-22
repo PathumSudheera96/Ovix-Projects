@@ -26,6 +26,13 @@ export default async function EditInvoicePage({ params }: { params: Promise<{ id
         invoice={{
           id: invoice.id,
           invoiceNo: invoice.invoiceNo,
+          currency: invoice.currency,
+          title: invoice.title ?? "INVOICE",
+          companyName: invoice.companyName ?? "Your Company",
+          companyEmail: invoice.companyEmail ?? "",
+          companyPhone: invoice.companyPhone ?? "",
+          companyAddress: invoice.companyAddress ?? "",
+          companyLogoUrl: invoice.companyLogoUrl ?? "",
           dueDate: toDateInputValue(invoice.dueDate),
           customerName: invoice.customer.name,
           customerEmail: invoice.customer.email ?? "",

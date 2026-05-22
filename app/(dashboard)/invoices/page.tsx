@@ -1,15 +1,26 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { InvoiceEmailSendButton } from "@/components/invoice-email-send-button";
 import { InvoiceStatusSelect } from "@/components/invoice-status-select";
 import { QueryFilterForm } from "@/components/query-filter-form";
+import { convertManyToCurrency, formatCurrency as formatFxCurrency } from "@/lib/fx-rates";
 import { requireSession } from "@/lib/auth/session";
 import { listInvoices } from "@/lib/invoices";
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+function formatCurrency(value: number, currency: string) {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+    }).format(value);
+  } catch {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(value);
+  }
+}
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -71,10 +82,22 @@ export default async function InvoicesPage({
       return b.createdAt.getTime() - a.createdAt.getTime();
     });
 
-  const totalBilled = invoices.reduce((sum, invoice) => sum + invoice.total, 0);
-  const totalOutstanding = invoices
-    .filter((invoice) => invoice.status === "sent" || invoice.status === "overdue")
-    .reduce((sum, invoice) => sum + invoice.total, 0);
+  const totalBilledUsd = await convertManyToCurrency(
+    invoices.map((invoice) => ({
+      amount: invoice.total,
+      currency: invoice.currency || "USD",
+    })),
+    "USD"
+  );
+  const totalOutstandingUsd = await convertManyToCurrency(
+    invoices
+      .filter((invoice) => invoice.status === "sent" || invoice.status === "overdue")
+      .map((invoice) => ({
+        amount: invoice.total,
+        currency: invoice.currency || "USD",
+      })),
+    "USD"
+  );
 
   return (
     <>
@@ -151,11 +174,15 @@ export default async function InvoicesPage({
         </div>
         <div className="rounded-lg border bg-card p-5 shadow-sm">
           <p className="text-sm text-muted-foreground">Total billed</p>
-          <p className="mt-2 text-2xl font-semibold">{currencyFormatter.format(totalBilled)}</p>
+          <p className="mt-2 text-2xl font-semibold">
+            {formatFxCurrency(totalBilledUsd, "USD")}
+          </p>
         </div>
         <div className="rounded-lg border bg-card p-5 shadow-sm">
           <p className="text-sm text-muted-foreground">Outstanding</p>
-          <p className="mt-2 text-2xl font-semibold">{currencyFormatter.format(totalOutstanding)}</p>
+          <p className="mt-2 text-2xl font-semibold">
+            {formatFxCurrency(totalOutstandingUsd, "USD")}
+          </p>
         </div>
       </section>
 
@@ -202,10 +229,24 @@ export default async function InvoicesPage({
                       <InvoiceStatusSelect invoiceId={invoice.id} status={invoice.status} />
                     </td>
                     <td className="px-5 py-4 text-right font-medium">
-                      {currencyFormatter.format(invoice.total)}
+                      {formatCurrency(invoice.total, invoice.currency || "USD")}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="inline-flex items-center gap-3">
+                        <Button asChild type="button" size="sm" variant="outline">
+                          <a
+                            href={`mailto:${encodeURIComponent(
+                              invoice.customer.email ?? ""
+                            )}?subject=${encodeURIComponent(
+                              `Invoice ${invoice.invoiceNo}`
+                            )}&body=${encodeURIComponent(
+                              `Hello ${invoice.customer.name},\n\nPlease find your invoice ${invoice.invoiceNo}.`
+                            )}`}
+                          >
+                            Email App
+                          </a>
+                        </Button>
+                        <InvoiceEmailSendButton invoiceId={invoice.id} />
                         <Button asChild type="button" size="sm" variant="info">
                           <a href={`/api/invoices/${invoice.id}/export`} target="_blank" rel="noreferrer">
                             Export
@@ -213,6 +254,9 @@ export default async function InvoicesPage({
                         </Button>
                         <Button asChild type="button" size="sm" variant="warning">
                           <Link href={`/invoices/${invoice.id}/edit`}>Edit</Link>
+                        </Button>
+                        <Button asChild type="button" size="sm" variant="secondary">
+                          <Link href={`/invoices/new?duplicateFrom=${invoice.id}`}>Duplicate</Link>
                         </Button>
                       </div>
                     </td>
